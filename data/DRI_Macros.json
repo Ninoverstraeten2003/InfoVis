@@ -1,0 +1,178 @@
+{
+  "Infants 0\u20136 mo": {
+    "Total Watera (L/d)": 0.7,
+    "Carbohydrate (g/d)": 60.0,
+    "Fat (g/d)": 31.0,
+    "Linoleic Acid (g/d)": 4.4,
+    "\u03b1-Linolenic Acid (g/d)": 0.5,
+    "Proteinb (g/d)": 9.1
+  },
+  "Infants 6\u201312 mo": {
+    "Total Watera (L/d)": 0.8,
+    "Carbohydrate (g/d)": 95.0,
+    "Fat (g/d)": 30.0,
+    "Linoleic Acid (g/d)": 4.6,
+    "\u03b1-Linolenic Acid (g/d)": 0.5,
+    "Proteinb (g/d)": 11.0
+  },
+  "Children 1\u20133 y": {
+    "Total Watera (L/d)": 1.3,
+    "Carbohydrate (g/d)": 130.0,
+    "Total Fiber (g/d)": 19.0,
+    "Linoleic Acid (g/d)": 7.0,
+    "\u03b1-Linolenic Acid (g/d)": 0.7,
+    "Proteinb (g/d)": 13.0
+  },
+  "Children 4\u20138 y": {
+    "Total Watera (L/d)": 1.7,
+    "Carbohydrate (g/d)": 130.0,
+    "Total Fiber (g/d)": 25.0,
+    "Linoleic Acid (g/d)": 10.0,
+    "\u03b1-Linolenic Acid (g/d)": 0.9,
+    "Proteinb (g/d)": 19.0
+  },
+  "Males 9\u201313 y": {
+    "Total Watera (L/d)": 2.4,
+    "Carbohydrate (g/d)": 130.0,
+    "Total Fiber (g/d)": 31.0,
+    "Linoleic Acid (g/d)": 12.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.2,
+    "Proteinb (g/d)": 34.0
+  },
+  "Males 14\u201318 y": {
+    "Total Watera (L/d)": 3.3,
+    "Carbohydrate (g/d)": 130.0,
+    "Total Fiber (g/d)": 38.0,
+    "Linoleic Acid (g/d)": 16.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.6,
+    "Proteinb (g/d)": 52.0
+  },
+  "Males 19\u201330 y": {
+    "Total Watera (L/d)": 3.7,
+    "Carbohydrate (g/d)": 130.0,
+    "Total Fiber (g/d)": 38.0,
+    "Linoleic Acid (g/d)": 17.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.6,
+    "Proteinb (g/d)": 56.0
+  },
+  "Males 31\u201350 y": {
+    "Total Watera (L/d)": 3.7,
+    "Carbohydrate (g/d)": 130.0,
+    "Total Fiber (g/d)": 38.0,
+    "Linoleic Acid (g/d)": 17.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.6,
+    "Proteinb (g/d)": 56.0
+  },
+  "Males 51\u201370 y": {
+    "Total Watera (L/d)": 3.7,
+    "Carbohydrate (g/d)": 130.0,
+    "Total Fiber (g/d)": 30.0,
+    "Linoleic Acid (g/d)": 14.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.6,
+    "Proteinb (g/d)": 56.0
+  },
+  "Males > 70 y": {
+    "Total Watera (L/d)": 3.7,
+    "Carbohydrate (g/d)": 130.0,
+    "Total Fiber (g/d)": 30.0,
+    "Linoleic Acid (g/d)": 14.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.6,
+    "Proteinb (g/d)": 56.0
+  },
+  "Females 9\u201313 y": {
+    "Total Watera (L/d)": 2.1,
+    "Carbohydrate (g/d)": 130.0,
+    "Total Fiber (g/d)": 26.0,
+    "Linoleic Acid (g/d)": 10.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.0,
+    "Proteinb (g/d)": 34.0
+  },
+  "Females 14\u201318 y": {
+    "Total Watera (L/d)": 2.3,
+    "Carbohydrate (g/d)": 130.0,
+    "Total Fiber (g/d)": 26.0,
+    "Linoleic Acid (g/d)": 11.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.1,
+    "Proteinb (g/d)": 46.0
+  },
+  "Females 19\u201330 y": {
+    "Total Watera (L/d)": 2.7,
+    "Carbohydrate (g/d)": 130.0,
+    "Total Fiber (g/d)": 25.0,
+    "Linoleic Acid (g/d)": 12.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.1,
+    "Proteinb (g/d)": 46.0
+  },
+  "Females 31\u201350 y": {
+    "Total Watera (L/d)": 2.7,
+    "Carbohydrate (g/d)": 130.0,
+    "Total Fiber (g/d)": 25.0,
+    "Linoleic Acid (g/d)": 12.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.1,
+    "Proteinb (g/d)": 46.0
+  },
+  "Females 51\u201370 y": {
+    "Total Watera (L/d)": 2.7,
+    "Carbohydrate (g/d)": 130.0,
+    "Total Fiber (g/d)": 21.0,
+    "Linoleic Acid (g/d)": 11.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.1,
+    "Proteinb (g/d)": 46.0
+  },
+  "Females > 70 y": {
+    "Total Watera (L/d)": 2.7,
+    "Carbohydrate (g/d)": 130.0,
+    "Total Fiber (g/d)": 21.0,
+    "Linoleic Acid (g/d)": 11.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.1,
+    "Proteinb (g/d)": 46.0
+  },
+  "Pregnancy 14\u201318 y": {
+    "Total Watera (L/d)": 3.0,
+    "Carbohydrate (g/d)": 175.0,
+    "Total Fiber (g/d)": 28.0,
+    "Linoleic Acid (g/d)": 13.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.4,
+    "Proteinb (g/d)": 71.0
+  },
+  "Pregnancy 19\u201330 y": {
+    "Total Watera (L/d)": 3.0,
+    "Carbohydrate (g/d)": 175.0,
+    "Total Fiber (g/d)": 28.0,
+    "Linoleic Acid (g/d)": 13.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.4,
+    "Proteinb (g/d)": 71.0
+  },
+  "Pregnancy 31\u201350 y": {
+    "Total Watera (L/d)": 3.0,
+    "Carbohydrate (g/d)": 175.0,
+    "Total Fiber (g/d)": 28.0,
+    "Linoleic Acid (g/d)": 13.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.4,
+    "Proteinb (g/d)": 71.0
+  },
+  "Lactation 14\u201318": {
+    "Total Watera (L/d)": 3.8,
+    "Carbohydrate (g/d)": 210.0,
+    "Total Fiber (g/d)": 29.0,
+    "Linoleic Acid (g/d)": 13.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.3,
+    "Proteinb (g/d)": 71.0
+  },
+  "Lactation 19\u201330 y": {
+    "Total Watera (L/d)": 3.8,
+    "Carbohydrate (g/d)": 210.0,
+    "Total Fiber (g/d)": 29.0,
+    "Linoleic Acid (g/d)": 13.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.3,
+    "Proteinb (g/d)": 71.0
+  },
+  "Lactation 31\u201350 y": {
+    "Total Watera (L/d)": 3.8,
+    "Carbohydrate (g/d)": 210.0,
+    "Total Fiber (g/d)": 29.0,
+    "Linoleic Acid (g/d)": 13.0,
+    "\u03b1-Linolenic Acid (g/d)": 1.3,
+    "Proteinb (g/d)": 71.0
+  }
+}

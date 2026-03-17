@@ -1,0 +1,162 @@
+{
+  "Men 19\u201330 (Underweight)": {
+    "Height (cm)": 176.1,
+    "Weight (kg)": 54.2,
+    "EER Inactive (kcal/d)": 2391.0,
+    "EER Low Active (kcal/d)": 2582.0,
+    "EER Active (kcal/d)": 2745.0,
+    "EER Very Active (kcal/d)": 2996.0
+  },
+  "Men 31\u201350 (Underweight)": {
+    "Height (cm)": 176.3,
+    "Weight (kg)": 54.7,
+    "EER Inactive (kcal/d)": 2237.0,
+    "EER Low Active (kcal/d)": 2429.0000000000005,
+    "EER Active (kcal/d)": 2591.0,
+    "EER Very Active (kcal/d)": 2846.0
+  },
+  "Men 51\u201370 (Underweight)": {
+    "Height (cm)": 174.9,
+    "Weight (kg)": 53.9,
+    "EER Inactive (kcal/d)": 2000.0,
+    "EER Low Active (kcal/d)": 2189.0,
+    "EER Active (kcal/d)": 2353.0,
+    "EER Very Active (kcal/d)": 2593.0
+  },
+  "Men > 70 (Underweight)": {
+    "Height (cm)": 172.2,
+    "Weight (kg)": 51.7,
+    "EER Inactive (kcal/d)": 1735.0,
+    "EER Low Active (kcal/d)": 1917.0,
+    "EER Active (kcal/d)": 2084.0,
+    "EER Very Active (kcal/d)": 2292.0000000000005
+  },
+  "Men 19 (Underweight)": {
+    "Height (cm)": 175.4,
+    "Weight (kg)": 54.3,
+    "EER Inactive (kcal/d)": 2117.0,
+    "EER Low Active (kcal/d)": 2307.0,
+    "EER Active (kcal/d)": 2471.0,
+    "EER Very Active (kcal/d)": 2716.0
+  },
+  "Men 19\u201330 (Normal weight)": {
+    "Height (cm)": 176.1,
+    "Weight (kg)": 68.5,
+    "EER Inactive (kcal/d)": 2593.0,
+    "EER Low Active (kcal/d)": 2796.0000000000005,
+    "EER Active (kcal/d)": 2972.0,
+    "EER Very Active (kcal/d)": 3269.0
+  },
+  "Men 31\u201350 (Normal weight)": {
+    "Height (cm)": 175.9,
+    "Weight (kg)": 71.0,
+    "EER Inactive (kcal/d)": 2464.0,
+    "EER Low Active (kcal/d)": 2669.0,
+    "EER Active (kcal/d)": 2848.0,
+    "EER Very Active (kcal/d)": 3152.0
+  },
+  "Men 51\u201370 (Normal weight)": {
+    "Height (cm)": 174.2,
+    "Weight (kg)": 69.9,
+    "EER Inactive (kcal/d)": 2221.0,
+    "EER Low Active (kcal/d)": 2422.0,
+    "EER Active (kcal/d)": 2603.0,
+    "EER Very Active (kcal/d)": 2887.0
+  },
+  "Men > 70 (Normal weight)": {
+    "Height (cm)": 170.5,
+    "Weight (kg)": 65.8,
+    "EER Inactive (kcal/d)": 1923.0,
+    "EER Low Active (kcal/d)": 2113.0,
+    "EER Active (kcal/d)": 2297.0,
+    "EER Very Active (kcal/d)": 2535.0
+  },
+  "Men 19 (Normal weight)": {
+    "Height (cm)": 175.1,
+    "Weight (kg)": 69.3,
+    "EER Inactive (kcal/d)": 2327.0,
+    "EER Low Active (kcal/d)": 2529.0,
+    "EER Active (kcal/d)": 2708.0,
+    "EER Very Active (kcal/d)": 2998.0
+  },
+  "Men 19\u201330 (Overweight)": {
+    "Height (cm)": 176.1,
+    "Weight (kg)": 83.3,
+    "EER Inactive (kcal/d)": 2802.0,
+    "EER Low Active (kcal/d)": 3017.0,
+    "EER Active (kcal/d)": 3208.0,
+    "EER Very Active (kcal/d)": 3552.0
+  },
+  "Men 31\u201350 (Overweight)": {
+    "Height (cm)": 175.7,
+    "Weight (kg)": 84.9,
+    "EER Inactive (kcal/d)": 2659.0000000000005,
+    "EER Low Active (kcal/d)": 2875.0,
+    "EER Active (kcal/d)": 3068.0,
+    "EER Very Active (kcal/d)": 3414.0
+  },
+  "Men 51\u201370 (Overweight)": {
+    "Height (cm)": 174.6,
+    "Weight (kg)": 83.0,
+    "EER Inactive (kcal/d)": 2408.0,
+    "EER Low Active (kcal/d)": 2621.0,
+    "EER Active (kcal/d)": 2814.0,
+    "EER Very Active (kcal/d)": 3144.0
+  },
+  "Men > 70 (Overweight)": {
+    "Height (cm)": 171.3,
+    "Weight (kg)": 80.1,
+    "EER Inactive (kcal/d)": 2130.0,
+    "EER Low Active (kcal/d)": 2334.0,
+    "EER Active (kcal/d)": 2530.0000000000005,
+    "EER Very Active (kcal/d)": 2820.0
+  },
+  "Men 19 (Overweight)": {
+    "Height (cm)": 175.0,
+    "Weight (kg)": 83.5,
+    "EER Inactive (kcal/d)": 2526.0000000000005,
+    "EER Low Active (kcal/d)": 2740.0,
+    "EER Active (kcal/d)": 2933.0000000000005,
+    "EER Very Active (kcal/d)": 3268.0000000000005
+  },
+  "Men 19\u201330 (Obese)": {
+    "Height (cm)": 176.2,
+    "Weight (kg)": 107.2,
+    "EER Inactive (kcal/d)": 3139.0000000000005,
+    "EER Low Active (kcal/d)": 3375.0,
+    "EER Active (kcal/d)": 3588.0,
+    "EER Very Active (kcal/d)": 4010.0
+  },
+  "Men 31\u201350 (Obese)": {
+    "Height (cm)": 176.9,
+    "Weight (kg)": 106.9,
+    "EER Inactive (kcal/d)": 2977.0,
+    "EER Low Active (kcal/d)": 3214.0,
+    "EER Active (kcal/d)": 3426.0,
+    "EER Very Active (kcal/d)": 3853.0
+  },
+  "Men 51\u201370 (Obese)": {
+    "Height (cm)": 175.3,
+    "Weight (kg)": 104.2,
+    "EER Inactive (kcal/d)": 2712.0,
+    "EER Low Active (kcal/d)": 2943.0,
+    "EER Active (kcal/d)": 3156.0,
+    "EER Very Active (kcal/d)": 3560.0
+  },
+  "Men > 70 (Obese)": {
+    "Height (cm)": 173.2,
+    "Weight (kg)": 100.3,
+    "EER Inactive (kcal/d)": 2427.0,
+    "EER Low Active (kcal/d)": 2651.0000000000005,
+    "EER Active (kcal/d)": 2863.0,
+    "EER Very Active (kcal/d)": 3236.0
+  },
+  "Men 19 (Obese)": {
+    "Height (cm)": 175.9,
+    "Weight (kg)": 105.0,
+    "EER Inactive (kcal/d)": 2835.0,
+    "EER Low Active (kcal/d)": 3069.0,
+    "EER Active (kcal/d)": 3281.0,
+    "EER Very Active (kcal/d)": 3693.0
+  }
+}

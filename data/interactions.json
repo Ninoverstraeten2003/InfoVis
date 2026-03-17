@@ -1,0 +1,158 @@
+[
+  {
+    "nutrient": "Vitamin A",
+    "synergistic": ["Iodine", "Iron", "Zinc"],
+    "varies": ["Vitamin E"],
+    "antagonistic": ["Vitamin K", "Vitamin D"]
+  },
+  {
+    "nutrient": "Vitamin B1",
+    "synergistic": ["Magnesium"],
+    "varies": [],
+    "antagonistic": ["Vitamin B6"]
+  },
+  {
+    "nutrient": "Vitamin B2",
+    "synergistic": [],
+    "varies": [],
+    "antagonistic": ["Calcium"]
+  },
+  {
+    "nutrient": "Vitamin B3",
+    "synergistic": ["Zinc"],
+    "varies": [],
+    "antagonistic": []
+  },
+  {
+    "nutrient": "Vitamin B5",
+    "synergistic": [],
+    "varies": [],
+    "antagonistic": ["Copper"]
+  },
+  {
+    "nutrient": "Vitamin B6",
+    "synergistic": [],
+    "varies": [],
+    "antagonistic": ["Vitamin B1", "Vitamin B9", "Zinc"]
+  },
+  {
+    "nutrient": "Vitamin B7",
+    "synergistic": [],
+    "varies": ["Vitamin B5"],
+    "antagonistic": []
+  },
+  {
+    "nutrient": "Vitamin B9",
+    "synergistic": [],
+    "varies": [],
+    "antagonistic": ["Vitamin B6", "Vitamin B12", "Zinc"]
+  },
+  {
+    "nutrient": "Vitamin B12",
+    "synergistic": [],
+    "varies": [],
+    "antagonistic": ["Vitamin B9", "Vitamin C"]
+  },
+  {
+    "nutrient": "Vitamin C",
+    "synergistic": ["Vitamin E"],
+    "varies": ["Copper", "Iron", "Selenium"],
+    "antagonistic": ["Vitamin B12"]
+  },
+  {
+    "nutrient": "Vitamin D",
+    "synergistic": ["Vitamin A", "Vitamin K", "Calcium", "Magnesium", "Selenium"],
+    "varies": [],
+    "antagonistic": ["Vitamin E"]
+  },
+  {
+    "nutrient": "Vitamin E",
+    "synergistic": ["Vitamin C", "Selenium", "Zinc"],
+    "varies": ["Vitamin A"],
+    "antagonistic": ["Vitamin D", "Vitamin K"]
+  },
+  {
+    "nutrient": "Vitamin K",
+    "synergistic": ["Calcium"],
+    "varies": ["Vitamin D"],
+    "antagonistic": ["Vitamin A", "Vitamin E"]
+  },
+  {
+    "nutrient": "Calcium",
+    "synergistic": ["Vitamin D", "Potassium"],
+    "varies": [],
+    "antagonistic": ["Magnesium", "Phosphorus", "Sodium", "Iron", "Manganese", "Zinc"]
+  },
+  {
+    "nutrient": "Magnesium",
+    "synergistic": ["Vitamin B1", "Vitamin B6", "Vitamin D", "Potassium"],
+    "varies": [],
+    "antagonistic": ["Calcium", "Phosphorus", "Zinc"]
+  },
+  {
+    "nutrient": "Phosphorus",
+    "synergistic": [],
+    "varies": [],
+    "antagonistic": ["Calcium", "Magnesium"]
+  },
+  {
+    "nutrient": "Potassium",
+    "synergistic": ["Calcium", "Manganese", "Sodium"],
+    "varies": [],
+    "antagonistic": []
+  },
+  {
+    "nutrient": "Sodium",
+    "synergistic": ["Potassium"],
+    "varies": [],
+    "antagonistic": ["Calcium"]
+  },
+  {
+    "nutrient": "Copper",
+    "synergistic": [],
+    "varies": ["Vitamin C"],
+    "antagonistic": ["Iron", "Molybdenum", "Selenium", "Zinc"]
+  },
+  {
+    "nutrient": "Iodine",
+    "synergistic": ["Vitamin A", "Selenium"],
+    "varies": [],
+    "antagonistic": []
+  },
+  {
+    "nutrient": "Iron",
+    "synergistic": ["Vitamin A", "Vitamin C"],
+    "varies": [],
+    "antagonistic": ["Vitamin E", "Calcium", "Copper", "Manganese", "Zinc"]
+  },
+  {
+    "nutrient": "Manganese",
+    "synergistic": [],
+    "varies": [],
+    "antagonistic": ["Calcium", "Iron"]
+  },
+  {
+    "nutrient": "Molybdenum",
+    "synergistic": [],
+    "varies": [],
+    "antagonistic": ["Copper"]
+  },
+  {
+    "nutrient": "Selenium",
+    "synergistic": ["Vitamin D", "Vitamin E", "Iodine"],
+    "varies": ["Vitamin C"],
+    "antagonistic": ["Copper"]
+  },
+  {
+    "nutrient": "Zinc",
+    "synergistic": ["Vitamin A", "Vitamin B3"],
+    "varies": [],
+    "antagonistic": ["Calcium", "Magnesium", "Copper", "Iron"]
+  },
+  {
+    "nutrient": "Sulfur",
+    "synergistic": ["Molybdenum"],
+    "varies": [],
+    "antagonistic": []
+  }
+]
