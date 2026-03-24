@@ -1,0 +1,596 @@
+[
+  {
+    "canonical_name": "Energy",
+    "category": "energy",
+    "default_unit": "kJ",
+    "infoods_tag": "ENERC",
+    "aliases": {
+      "EFSA": ["Energy"],
+      "CIQUAL": [
+        "Energy, Regulation EU No 1169 2011 (kJ 100g)",
+        "Energy, Regulation EU No 1169 2011 (kcal 100g)",
+        "Energy, N x Jones' factor, with fibres (kJ 100g)",
+        "Energy, N x Jones' factor, with fibres (kcal 100g)"
+      ]
+    }
+  },
+  {
+    "canonical_name": "Water",
+    "category": "other",
+    "default_unit": "g",
+    "infoods_tag": "WATER",
+    "aliases": {
+      "EFSA": ["Water"],
+      "CIQUAL": ["Water (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Protein",
+    "category": "macro",
+    "default_unit": "g",
+    "infoods_tag": "PROCNT",
+    "aliases": {
+      "EFSA": ["Protein"],
+      "CIQUAL": [
+        "Protein (g 100g)",
+        "Protein, crude, N x 6.25 (g 100g)"
+      ]
+    }
+  },
+  {
+    "canonical_name": "Total carbohydrates",
+    "category": "macro",
+    "default_unit": "g",
+    "infoods_tag": "CHOAVL",
+    "aliases": {
+      "EFSA": ["Total carbohydrates"],
+      "CIQUAL": ["Carbohydrate (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Total fat",
+    "category": "macro",
+    "default_unit": "g",
+    "infoods_tag": "FAT",
+    "aliases": {
+      "EFSA": ["Total fat"],
+      "CIQUAL": ["Fat (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Dietary fibre",
+    "category": "macro",
+    "default_unit": "g",
+    "infoods_tag": "FIB-",
+    "aliases": {
+      "EFSA": ["Dietary fibre"],
+      "CIQUAL": ["Fibres (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Added and free sugars",
+    "category": "macro",
+    "default_unit": "g",
+    "infoods_tag": "SUGAR",
+    "aliases": {
+      "EFSA": ["Added and free sugars"],
+      "CIQUAL": ["Sugars (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Saturated fatty acids",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": "FASAT",
+    "aliases": {
+      "EFSA": ["Saturated fatty acids (SFA)"],
+      "CIQUAL": ["FA saturated (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Trans-fatty acids",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": null,
+    "aliases": {
+      "EFSA": ["Trans-fatty acids (TFA)"]
+    }
+  },
+  {
+    "canonical_name": "Alpha-linolenic acid",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": "F18D3N3",
+    "aliases": {
+      "EFSA": ["Alpha-linolenic acid (ALA)"],
+      "CIQUAL": ["FA 18:3 c9,c12,c15 (n-3) (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Linoleic acid",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": "F18D2CN6",
+    "aliases": {
+      "EFSA": ["Linoleic acid (LA)"],
+      "CIQUAL": ["FA 18:2 9c,12c (n-6) (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "EPA+DHA",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": null,
+    "aliases": {
+      "EFSA": ["Eicosapentaenoic acid, Docosahexaenoic acid (EPA, DHA)"],
+      "CIQUAL": [
+        "FA 20:5 5c,8c,11c,14c,17c (n-3) EPA (g 100g)",
+        "FA 22:6 4c,7c,10c,13c,16c,19c (n-3) DHA (g 100g)"
+      ]
+    }
+  },
+  {
+    "canonical_name": "Calcium",
+    "category": "mineral",
+    "default_unit": "mg",
+    "infoods_tag": "CA",
+    "aliases": {
+      "EFSA": ["Calcium"],
+      "CIQUAL": ["Calcium (mg 100g)"],
+      "INTERACTIONS": ["Calcium"]
+    }
+  },
+  {
+    "canonical_name": "Chloride",
+    "category": "mineral",
+    "default_unit": "mg",
+    "infoods_tag": "CLD",
+    "aliases": {
+      "EFSA": ["Chloride"],
+      "CIQUAL": ["Chloride (mg 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Copper",
+    "category": "mineral",
+    "default_unit": "mg",
+    "infoods_tag": "CU",
+    "aliases": {
+      "EFSA": ["Copper"],
+      "CIQUAL": ["Copper (mg 100g)"],
+      "INTERACTIONS": ["Copper"]
+    }
+  },
+  {
+    "canonical_name": "Fluoride",
+    "category": "mineral",
+    "default_unit": "mg",
+    "infoods_tag": null,
+    "aliases": {
+      "EFSA": ["Fluoride"]
+    }
+  },
+  {
+    "canonical_name": "Iodine",
+    "category": "mineral",
+    "default_unit": "µg",
+    "infoods_tag": "ID",
+    "aliases": {
+      "EFSA": ["Iodine"],
+      "CIQUAL": ["Iodine (µg 100g)"],
+      "INTERACTIONS": ["Iodine"]
+    }
+  },
+  {
+    "canonical_name": "Iron",
+    "category": "mineral",
+    "default_unit": "mg",
+    "infoods_tag": "FE",
+    "aliases": {
+      "EFSA": ["Iron"],
+      "CIQUAL": ["Iron (mg 100g)"],
+      "INTERACTIONS": ["Iron"]
+    }
+  },
+  {
+    "canonical_name": "Magnesium",
+    "category": "mineral",
+    "default_unit": "mg",
+    "infoods_tag": "MG",
+    "aliases": {
+      "EFSA": ["Magnesium"],
+      "CIQUAL": ["Magnesium (mg 100g)"],
+      "INTERACTIONS": ["Magnesium"]
+    }
+  },
+  {
+    "canonical_name": "Manganese",
+    "category": "mineral",
+    "default_unit": "mg",
+    "infoods_tag": "MN",
+    "aliases": {
+      "EFSA": ["Manganese"],
+      "CIQUAL": ["Manganese (mg 100g)"],
+      "INTERACTIONS": ["Manganese"]
+    }
+  },
+  {
+    "canonical_name": "Molybdenum",
+    "category": "mineral",
+    "default_unit": "µg",
+    "infoods_tag": null,
+    "aliases": {
+      "EFSA": ["Molybdenum"],
+      "INTERACTIONS": ["Molybdenum"]
+    }
+  },
+  {
+    "canonical_name": "Phosphorus",
+    "category": "mineral",
+    "default_unit": "mg",
+    "infoods_tag": "P",
+    "aliases": {
+      "EFSA": ["Phosphorus"],
+      "CIQUAL": ["Phosphorus (mg 100g)"],
+      "INTERACTIONS": ["Phosphorus"]
+    }
+  },
+  {
+    "canonical_name": "Potassium",
+    "category": "mineral",
+    "default_unit": "mg",
+    "infoods_tag": "K",
+    "aliases": {
+      "EFSA": ["Potassium"],
+      "CIQUAL": ["Potassium (mg 100g)"],
+      "INTERACTIONS": ["Potassium"]
+    }
+  },
+  {
+    "canonical_name": "Selenium",
+    "category": "mineral",
+    "default_unit": "µg",
+    "infoods_tag": "SE",
+    "aliases": {
+      "EFSA": ["Selenium"],
+      "CIQUAL": ["Selenium (µg 100g)"],
+      "INTERACTIONS": ["Selenium"]
+    }
+  },
+  {
+    "canonical_name": "Sodium",
+    "category": "mineral",
+    "default_unit": "mg",
+    "infoods_tag": "NA",
+    "aliases": {
+      "EFSA": ["Sodium"],
+      "CIQUAL": ["Sodium (mg 100g)"],
+      "INTERACTIONS": ["Sodium"]
+    }
+  },
+  {
+    "canonical_name": "Zinc",
+    "category": "mineral",
+    "default_unit": "mg",
+    "infoods_tag": "ZN",
+    "aliases": {
+      "EFSA": ["Zinc"],
+      "CIQUAL": ["Zinc (mg 100g)"],
+      "INTERACTIONS": ["Zinc"]
+    }
+  },
+  {
+    "canonical_name": "Vitamin A",
+    "category": "vitamin",
+    "default_unit": "µg RE",
+    "infoods_tag": "RAE",
+    "aliases": {
+      "EFSA": ["Vitamin A"],
+      "CIQUAL": [
+        "Vitamin A activity, retinol equivalent (µg 100mg)",
+        "Retinol (µg 100g)",
+        "Beta-carotene (µg 100g)"
+      ],
+      "INTERACTIONS": ["Vitamin A"]
+    }
+  },
+  {
+    "canonical_name": "Thiamin",
+    "category": "vitamin",
+    "default_unit": "mg",
+    "infoods_tag": "THIA",
+    "aliases": {
+      "EFSA": ["Thiamin"],
+      "CIQUAL": ["Vitamin B1 or Thiamin (mg 100g)"],
+      "INTERACTIONS": ["Vitamin B1"]
+    }
+  },
+  {
+    "canonical_name": "Riboflavin",
+    "category": "vitamin",
+    "default_unit": "mg",
+    "infoods_tag": "RIBF",
+    "aliases": {
+      "EFSA": ["Riboflavin"],
+      "CIQUAL": ["Vitamin B2 or Riboflavin (mg 100g)"],
+      "INTERACTIONS": ["Vitamin B2"]
+    }
+  },
+  {
+    "canonical_name": "Niacin",
+    "category": "vitamin",
+    "default_unit": "mg NE",
+    "infoods_tag": "NIA",
+    "aliases": {
+      "EFSA": ["Niacin"],
+      "CIQUAL": ["Vitamin B3 or Niacin (mg 100g)"],
+      "INTERACTIONS": ["Vitamin B3"]
+    }
+  },
+  {
+    "canonical_name": "Pantothenic acid",
+    "category": "vitamin",
+    "default_unit": "mg",
+    "infoods_tag": "PANTAC",
+    "aliases": {
+      "EFSA": ["Pantothenic acid"],
+      "CIQUAL": ["Vitamin B5 or Pantothenic acid (mg 100g)"],
+      "INTERACTIONS": ["Vitamin B5"]
+    }
+  },
+  {
+    "canonical_name": "Vitamin B6",
+    "category": "vitamin",
+    "default_unit": "mg",
+    "infoods_tag": "VITB6-",
+    "aliases": {
+      "EFSA": ["Vitamin B6"],
+      "CIQUAL": ["Vitamin B6 (mg 100g)"],
+      "INTERACTIONS": ["Vitamin B6"]
+    }
+  },
+  {
+    "canonical_name": "Biotin",
+    "category": "vitamin",
+    "default_unit": "µg",
+    "infoods_tag": null,
+    "aliases": {
+      "EFSA": ["Biotin"],
+      "INTERACTIONS": ["Vitamin B7"]
+    }
+  },
+  {
+    "canonical_name": "Folate",
+    "category": "vitamin",
+    "default_unit": "µg DFE",
+    "infoods_tag": "FOLDFE",
+    "aliases": {
+      "EFSA": ["Folate"],
+      "CIQUAL": [
+        "Vitamin B9 or total folates, dietary folate equivalents, DFE (µg 100g)",
+        "Vitamin B9 or total folates (µg 100g)",
+        "Intrinsic folate (µg 100 g)",
+        "Folic acid (enrichment) (µg 100g)"
+      ],
+      "INTERACTIONS": ["Vitamin B9"]
+    }
+  },
+  {
+    "canonical_name": "Cobalamin",
+    "category": "vitamin",
+    "default_unit": "µg",
+    "infoods_tag": "VITB12",
+    "aliases": {
+      "EFSA": ["Cobalamin (vitamin B12)"],
+      "CIQUAL": ["Vitamin B12 (µg 100g)"],
+      "INTERACTIONS": ["Vitamin B12"]
+    }
+  },
+  {
+    "canonical_name": "Vitamin C",
+    "category": "vitamin",
+    "default_unit": "mg",
+    "infoods_tag": "VITC",
+    "aliases": {
+      "EFSA": ["Vitamin C"],
+      "CIQUAL": ["Vitamin C (mg 100g)"],
+      "INTERACTIONS": ["Vitamin C"]
+    }
+  },
+  {
+    "canonical_name": "Vitamin D",
+    "category": "vitamin",
+    "default_unit": "µg",
+    "infoods_tag": "VITD-",
+    "aliases": {
+      "EFSA": ["Vitamin D"],
+      "CIQUAL": [
+        "Vitamin D (µg 100g)",
+        "Vitamin D2 (ergocalciferol) (µg 100g)",
+        "Vitamin D3 (cholecalciferol) (µg 100g)"
+      ],
+      "INTERACTIONS": ["Vitamin D"]
+    }
+  },
+  {
+    "canonical_name": "Vitamin E",
+    "category": "vitamin",
+    "default_unit": "mg",
+    "infoods_tag": "VITE-",
+    "aliases": {
+      "EFSA": ["Vitamin E"],
+      "CIQUAL": [
+        "Alpha-tocopherol (vitamine E)(mg 100g)",
+        "Vitamin E (mg 100g)"
+      ],
+      "INTERACTIONS": ["Vitamin E"]
+    }
+  },
+  {
+    "canonical_name": "Vitamin K",
+    "category": "vitamin",
+    "default_unit": "µg",
+    "infoods_tag": "VITK1",
+    "aliases": {
+      "EFSA": ["Vitamin K as phylloquinone"],
+      "CIQUAL": [
+        "Vitamin K1 (µg 100g)",
+        "Vitamin K2 (µg 100g)"
+      ],
+      "INTERACTIONS": ["Vitamin K"]
+    }
+  },
+  {
+    "canonical_name": "Choline",
+    "category": "vitamin",
+    "default_unit": "mg",
+    "infoods_tag": null,
+    "aliases": {
+      "EFSA": ["Choline"]
+    }
+  },
+  {
+    "canonical_name": "Sulfur",
+    "category": "mineral",
+    "default_unit": "mg",
+    "infoods_tag": null,
+    "aliases": {
+      "INTERACTIONS": ["Sulfur"]
+    }
+  },
+  {
+    "canonical_name": "Cholesterol",
+    "category": "lipid",
+    "default_unit": "mg",
+    "infoods_tag": "CHOL-",
+    "aliases": {
+      "CIQUAL": ["Cholesterol (mg 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Salt",
+    "category": "other",
+    "default_unit": "g",
+    "infoods_tag": null,
+    "aliases": {
+      "CIQUAL": ["Salt (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Alcohol",
+    "category": "other",
+    "default_unit": "g",
+    "infoods_tag": "ALC",
+    "aliases": {
+      "CIQUAL": ["Alcohol (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Ash",
+    "category": "other",
+    "default_unit": "g",
+    "infoods_tag": "ASH",
+    "aliases": {
+      "CIQUAL": ["Ash (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Organic acids",
+    "category": "other",
+    "default_unit": "g",
+    "infoods_tag": "OA",
+    "aliases": {
+      "CIQUAL": ["Organic acids (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Starch",
+    "category": "macro",
+    "default_unit": "g",
+    "infoods_tag": "STARCH",
+    "aliases": {
+      "CIQUAL": ["Starch (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Polyols",
+    "category": "macro",
+    "default_unit": "g",
+    "infoods_tag": "POLYL",
+    "aliases": {
+      "CIQUAL": ["Polyols (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Fructose",
+    "category": "macro",
+    "default_unit": "g",
+    "infoods_tag": "FRUS",
+    "aliases": {
+      "CIQUAL": ["Fructose (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Galactose",
+    "category": "macro",
+    "default_unit": "g",
+    "infoods_tag": "GALS",
+    "aliases": {
+      "CIQUAL": ["Galactose (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Glucose",
+    "category": "macro",
+    "default_unit": "g",
+    "infoods_tag": "GLUS",
+    "aliases": {
+      "CIQUAL": ["Glucose (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Lactose",
+    "category": "macro",
+    "default_unit": "g",
+    "infoods_tag": "LACS",
+    "aliases": {
+      "CIQUAL": ["Lactose (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Maltose",
+    "category": "macro",
+    "default_unit": "g",
+    "infoods_tag": "MALS",
+    "aliases": {
+      "CIQUAL": ["Maltose (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Sucrose",
+    "category": "macro",
+    "default_unit": "g",
+    "infoods_tag": "SUCS",
+    "aliases": {
+      "CIQUAL": ["Sucrose (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "FA mono",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": "FAMS",
+    "aliases": {
+      "CIQUAL": ["FA mono (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "FA poly",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": "FAPU",
+    "aliases": {
+      "CIQUAL": ["FA poly (g 100g)"]
+    }
+  }
+]

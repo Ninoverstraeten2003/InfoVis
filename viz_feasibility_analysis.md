@@ -37,7 +37,13 @@ Your concern is valid — some nutrient interactions (e.g. zinc vs copper toxici
 > [!TIP]
 > **The fix is simple**: scope the visualization to explicitly say **"interactions at dietary/food-level doses"** and only include edges that are documented at food-relevant quantities. This is still ~20-30 well-documented interactions — more than enough for a rich network graph.
 
-The Linus Pauling Institute and NIH ODS Fact Sheets both document **which interactions occur at dietary vs. supplemental levels**, so you can filter accordingly. The Deanna Minich chart already focuses on clinically-relevant interactions.
+The Linus Pauling Institute Micronutrient Information Center and NIH ODS Fact Sheets both document **which interactions occur at dietary vs. supplemental levels**, so you can filter accordingly. The Deanna Minich chart already focuses on clinically-relevant interactions.
+
+For this project, the clean split is:
+- **EFSA DRVs** for the intake/reference values shown in the project
+- **LPI / NIH ODS / literature** for the interaction evidence and mechanism descriptions
+
+That works because interaction evidence is a biology question, while DRVs are a policy/reference-framework question. The interaction itself does not depend on which regional intake framework you use. What matters is that any thresholds or intake comparisons in the project should be expressed against **EFSA** values.
 
 **Verdict: ✅ Valid — just curate your edge list to dietary-dose interactions only. You have plenty.**
 
@@ -51,17 +57,17 @@ The Linus Pauling Institute and NIH ODS Fact Sheets both document **which intera
 
 | What you need | Source | Availability |
 |---|---|---|
-| Nutritional profile per food (all macros + micros) | **USDA FoodData Central** | ✅ Free API, **380,000+ foods**, ~150 nutrients per item. Gold-standard data. |
-| Daily Recommended Intakes (the "target shape") | **NCBI DRI Tables** | ✅ Publicly available, static tables. Already linked in your doc. |
-| Curated food list (~80-100 items) | You select from USDA | ✅ Trivially done — just pick 80-100 common foods and pre-fetch their USDA profiles |
-| Food group categorization | USDA already categorizes foods | ✅ Built into the USDA data |
+| Nutritional profile per food (all macros + micros) | **CIQUAL** food composition data | ✅ Strong availability and aligned with the European framing of the project |
+| Daily reference values (the "target shape") | **EFSA DRVs** | ✅ Available and now already converted into project JSON from the EU workbook |
+| Curated food list (~80-100 items) | You select from your chosen food database | ✅ Trivially done — just pick common foods and pre-fetch their nutrient profiles |
+| Food group categorization | Usually included in the food database or can be added manually | ✅ Straightforward |
 
 ### Why this is the easiest one data-wise
 
-- **USDA FoodData Central** is arguably the most complete, freely-accessible nutrition database in the world. Each food entry has detailed breakdowns for: energy, protein, carbs, fat, fiber, all vitamins (A, B1-12, C, D, E, K), all minerals (Ca, Fe, Zn, Mg, K, Na, P, etc.), amino acids, fatty acids, and more.
+- **CIQUAL** is the key food composition source here. It fits the European framing of the project and gives you the nutrient composition data needed for food-level comparisons.
 - You don't need any country-level or population data — it's purely **composition data per food item**.
-- The DRI tables are static reference data you just hardcode once.
-- The [OpenNutrition](https://www.opennutrition.app/) API aggregates USDA + Canadian + Danish + Australian databases for even better coverage.
+- The reference values should now come from your **EFSA-derived normalized dataset**.
+- If you later need broader food coverage, you can add another European-compatible food composition source, but CIQUAL is enough for the current scope.
 
 **Verdict: ✅ Plenty of data — this is the most data-rich visualization with zero data scarcity concerns.**
 
@@ -101,7 +107,7 @@ Instead of needing per-country consumption data (which is scarce), your "Paradox
 
 1. **Deficiency prevalence** (well-covered) → colors the choropleth map ✅
 2. **Food production/supply data** from FAOSTAT → "What this country grows" ✅
-3. **USDA nutrient data** (from Viz 2) → "What these foods contain" ✅
+3. **Food composition data** (from Viz 2; CIQUAL) → "What these foods contain" ✅
 4. **The gap** = comparing production of nutrient-rich crops vs. deficiency rate → this is the "paradox" ✅
 
 You don't actually *need* consumption data to tell the story. The paradox is: *"This country grows tons of iron-rich crops, yet has 40% anemia prevalence"* — which you can derive from **production + deficiency** data alone.
@@ -124,6 +130,6 @@ Drop **Vitamin D** from the dropdown — the global data is too spotty for a pro
 
 | Viz | Feasibility | Action needed |
 |---|---|---|
-| **1 — Nutrient Cosmos** | ✅ Valid | Curate edges to food-dose interactions only (~20-30 still available) |
-| **2 — Perfect Plate** | ✅ Excellent | USDA has everything you need, no concerns |
+| **1 — Nutrient Cosmos** | ✅ Valid | Curate edges to food-dose interactions only and express any thresholds against EFSA values |
+| **2 — Perfect Plate** | ✅ Excellent | Use EFSA for reference values and CIQUAL for food nutrient profiles |
 | **3 — What the World Is Missing** | ⚠️ Doable with pivot | Use production + deficiency data (not consumption). Drop Vitamin D. Focus on 4 nutrients. |
