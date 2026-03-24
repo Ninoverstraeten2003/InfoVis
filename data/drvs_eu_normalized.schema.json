@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Normalized EFSA DRV Dataset",
+  "type": "object",
+  "required": [
+    "dataset",
+    "source_system",
+    "source_file",
+    "record_count",
+    "records"
+  ],
+  "properties": {
+    "dataset": {
+      "type": "string"
+    },
+    "source_system": {
+      "type": "string",
+      "const": "EFSA"
+    },
+    "source_file": {
+      "type": "string"
+    },
+    "record_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/record"
+      }
+    }
+  },
+  "$defs": {
+    "age": {
+      "type": "object",
+      "required": [
+        "raw",
+        "min",
+        "max",
+        "unit",
+        "comparator",
+        "pal"
+      ],
+      "properties": {
+        "raw": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "min": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "max": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "unit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "comparator": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "pal": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    },
+    "reference": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "raw": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        },
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "raw",
+        "status",
+        "kind"
+      ]
+    },
+    "record": {
+      "type": "object",
+      "required": [
+        "source_system",
+        "source_file",
+        "category",
+        "nutrient",
+        "target_population",
+        "gender",
+        "age",
+        "references"
+      ],
+      "properties": {
+        "source_system": {
+          "type": "string",
+          "const": "EFSA"
+        },
+        "source_file": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "nutrient": {
+          "type": "string"
+        },
+        "target_population": {
+          "type": "string"
+        },
+        "gender": {
+          "type": "string"
+        },
+        "age": {
+          "$ref": "#/$defs/age"
+        },
+        "references": {
+          "type": "object",
+          "required": [
+            "AI",
+            "AR",
+            "PRI",
+            "RI",
+            "UL",
+            "safe_and_adequate_intake"
+          ],
+          "properties": {
+            "AI": {
+              "$ref": "#/$defs/reference"
+            },
+            "AR": {
+              "$ref": "#/$defs/reference"
+            },
+            "PRI": {
+              "$ref": "#/$defs/reference"
+            },
+            "RI": {
+              "$ref": "#/$defs/reference"
+            },
+            "UL": {
+              "$ref": "#/$defs/reference"
+            },
+            "safe_and_adequate_intake": {
+              "$ref": "#/$defs/reference"
+            }
+          }
+        }
+      }
+    }
+  }
+}
