@@ -140,7 +140,24 @@ CREATE TABLE food (
 CREATE INDEX idx_food_group ON food(group_name);
 
 -- ---------------------------------------------------------------------------
--- 10. food_nutrient_value — pivoted nutrient values per food
+-- 10. food_display_profile — presentation-layer defaults for rankings/views
+-- ---------------------------------------------------------------------------
+CREATE TABLE food_display_profile (
+    food_id              INT PRIMARY KEY REFERENCES food(id) ON DELETE CASCADE,
+    serving_size_g       NUMERIC,                              -- default display portion
+    serving_label        TEXT,                                 -- e.g. '1 tbsp', '1 fillet'
+    include_in_rankings  BOOLEAN NOT NULL DEFAULT TRUE,        -- curated display filter
+    ranking_category     TEXT,                                 -- 'meal_food', 'ingredient', 'spice', 'powder', etc.
+    display_priority     INT NOT NULL DEFAULT 100,             -- lower = show earlier
+    notes                TEXT
+);
+
+CREATE INDEX idx_fdp_include   ON food_display_profile(include_in_rankings);
+CREATE INDEX idx_fdp_category  ON food_display_profile(ranking_category);
+CREATE INDEX idx_fdp_priority  ON food_display_profile(display_priority);
+
+-- ---------------------------------------------------------------------------
+-- 11. food_nutrient_value — pivoted nutrient values per food
 -- ---------------------------------------------------------------------------
 CREATE TABLE food_nutrient_value (
     id                  SERIAL PRIMARY KEY,
@@ -162,7 +179,7 @@ CREATE INDEX idx_fnv_food     ON food_nutrient_value(food_id);
 CREATE INDEX idx_fnv_nutrient ON food_nutrient_value(nutrient_id);
 
 -- ---------------------------------------------------------------------------
--- 11. nutrient_relationship — directed interaction edges
+-- 12. nutrient_relationship — directed interaction edges
 -- ---------------------------------------------------------------------------
 CREATE TABLE nutrient_relationship (
     id                  SERIAL PRIMARY KEY,

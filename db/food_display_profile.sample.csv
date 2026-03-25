@@ -1,0 +1,19 @@
+source_food_code,serving_size_g,serving_label,include_in_rankings,ranking_category,display_priority,notes
+4003,200,2 medium potatoes,true,vegetable,20,Plain boiled potato
+20009,80,1 carrot,true,vegetable,20,Raw carrot
+20034,80,1 onion,true,vegetable,25,Raw onion
+20059,75,1 bowl,true,vegetable,20,Raw spinach
+20351,120,1 side portion,true,vegetable,20,Cooked broccoli
+13039,150,1 apple,true,fruit,20,Raw apple with skin
+13037,160,1 pear,true,fruit,20,Raw pear with skin
+7010,60,2 slices,true,grain,20,Brown bread
+32140,40,1 bowl,true,grain,20,Oat flakes
+20360,150,1 bowl,true,legume,20,Cooked lentils
+19033,200,1 glass,true,dairy,20,Semi-skimmed milk
+19593,125,1 pot,true,dairy,20,Plain yogurt
+12999,30,1 portion,true,dairy,30,Cheese average
+22000,60,1 egg,true,protein,20,Raw whole egg equivalent
+36032,120,1 fillet,true,protein,20,Roasted chicken breast
+6201,150,1 steak,true,protein,25,Raw beef steak reference
+26036,120,1 fillet,true,protein,20,Raw salmon reference
+10013,150,1 bowl,true,protein,20,Cooked mussels

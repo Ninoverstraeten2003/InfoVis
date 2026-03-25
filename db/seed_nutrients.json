@@ -592,5 +592,95 @@
     "aliases": {
       "CIQUAL": ["FA poly (g 100g)"]
     }
+  },
+  {
+    "canonical_name": "Butyric acid (FA 4:0)",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": "F4D0",
+    "aliases": {
+      "CIQUAL": ["FA 4:0 (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Caproic acid (FA 6:0)",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": "F6D0",
+    "aliases": {
+      "CIQUAL": ["FA 6:0 (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Caprylic acid (FA 8:0)",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": "F8D0",
+    "aliases": {
+      "CIQUAL": ["FA 8:0 (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Capric acid (FA 10:0)",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": "F10D0",
+    "aliases": {
+      "CIQUAL": ["FA 10:0 (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Lauric acid (FA 12:0)",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": "F12D0",
+    "aliases": {
+      "CIQUAL": ["FA 12:0 (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Myristic acid (FA 14:0)",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": "F14D0",
+    "aliases": {
+      "CIQUAL": ["FA 14:0 (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Palmitic acid (FA 16:0)",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": "F16D0",
+    "aliases": {
+      "CIQUAL": ["FA 16:0 (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Stearic acid (FA 18:0)",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": "F18D0",
+    "aliases": {
+      "CIQUAL": ["FA 18:0 (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Oleic acid (FA 18:1 n-9)",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": "F18D1CN9",
+    "aliases": {
+      "CIQUAL": ["FA 18:1 n-9 cis (g 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Arachidonic acid (FA 20:4 n-6)",
+    "category": "lipid",
+    "default_unit": "g",
+    "infoods_tag": "F20D4N6",
+    "aliases": {
+      "CIQUAL": ["FA 20:4 5c,8c,11c,14c (n-6) (g 100g)"]
+    }
   }
 ]
