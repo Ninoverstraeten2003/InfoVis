@@ -13,6 +13,7 @@ This creates:
 - `api` schema
 - read-only API roles (`web_anon`, `authenticator`)
 - RPC functions for Viz 1 and Viz 2 query shapes
+- RPC functions for dropdown/filter option lists used by the client
 - grants for `web_anon` on all current/future tables in `public`
 - grants for `web_anon` on all current/future functions in `api`
 
@@ -64,6 +65,40 @@ http://127.0.0.1:3000
   - compatibility: legacy `p_source_nutrient` is accepted but ignored
 - Curated ranking:
   - `GET /rpc/viz2_curated_rank?p_nutrient=Iron&p_drv_sex=Female&p_ref_type=PRI&p_limit=20`
+
+### Dropdown / filter option endpoints
+
+- Viz 1 nutrient options (`p_selected_nutrient`):
+  - `GET /rpc/viz1_option_nutrients`
+
+- Viz 2 nutrient options (`p_nutrient`, `p_nutrients`) with optional scope:
+  - `GET /rpc/viz2_option_nutrients`
+  - `GET /rpc/viz2_option_nutrients?p_drv_sex=Female&p_ref_type=PRI`
+  - `GET /rpc/viz2_option_nutrients?p_curated_only=true`
+
+- Viz 2 food options (`p_food_name`) with optional scope:
+  - `GET /rpc/viz2_option_foods`
+  - `GET /rpc/viz2_option_foods?p_nutrient=Iron&p_drv_sex=Female&p_ref_type=PRI`
+  - `GET /rpc/viz2_option_foods?p_curated_only=true`
+
+- Viz 2 DRV sex options (`p_drv_sex`, `p_drv_sexes`):
+  - `GET /rpc/viz2_option_drv_sexes`
+  - `GET /rpc/viz2_option_drv_sexes?p_nutrient=Iron`
+
+- Viz 2 reference type options (`p_ref_type`, `p_ref_types`):
+  - `GET /rpc/viz2_option_ref_types`
+  - `GET /rpc/viz2_option_ref_types?p_nutrient=Iron&p_drv_sex=Female`
+
+- Relationship type options (`p_relationship_type`):
+  - `GET /rpc/viz2_option_relationship_types`
+
+- Viz 2 source nutrient options (`p_source_nutrient`) for support clusters:
+  - `GET /rpc/viz2_option_source_nutrients`
+  - `GET /rpc/viz2_option_source_nutrients?p_relationship_type=synergistic`
+
+- Viz 2 target nutrient options (`p_target_nutrient`) for conflict-aware ranking:
+  - `GET /rpc/viz2_option_target_nutrients`
+  - `GET /rpc/viz2_option_target_nutrients?p_requires_antagonists=false`
 
 ## Notes
 

@@ -92,7 +92,7 @@ $$;
 
 CREATE OR REPLACE FUNCTION api.viz1_food_anchors(
     p_selected_nutrient text DEFAULT 'Iron',
-    p_top_n integer DEFAULT 20
+    p_top_n integer DEFAULT 5
 )
 RETURNS TABLE (
     nutrient_name text,
@@ -461,6 +461,233 @@ AS $$
         ) DESC NULLS LAST,
         v.food_name
     LIMIT GREATEST(p_limit, 1);
+$$;
+
+CREATE OR REPLACE FUNCTION api.viz1_option_nutrients()
+RETURNS TABLE (
+    nutrient_name text,
+    category text
+)
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT
+        n.canonical_name AS nutrient_name,
+        n.category
+    FROM public.nutrient n
+    WHERE EXISTS (
+        SELECT 1
+        FROM public.v_interaction_graph ig
+        WHERE ig.source_nutrient = n.canonical_name
+           OR ig.target_nutrient = n.canonical_name
+    )
+      AND EXISTS (
+        SELECT 1
+        FROM public.v_top_foods_per_nutrient t
+        WHERE t.nutrient_name = n.canonical_name
+    )
+    ORDER BY n.canonical_name;
+$$;
+
+CREATE OR REPLACE FUNCTION api.viz2_option_nutrients(
+    p_drv_sex text DEFAULT NULL,
+    p_ref_type text DEFAULT NULL,
+    p_curated_only boolean DEFAULT FALSE
+)
+RETURNS TABLE (
+    nutrient_name text,
+    nutrient_category text
+)
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT DISTINCT
+        v.nutrient_name,
+        v.nutrient_category
+    FROM public.v_food_drv_coverage v
+    LEFT JOIN public.food_display_profile fdp ON fdp.food_id = v.food_id
+    WHERE (p_drv_sex IS NULL OR v.drv_sex = p_drv_sex)
+      AND (p_ref_type IS NULL OR v.ref_type = p_ref_type)
+      AND (NOT p_curated_only OR COALESCE(fdp.include_in_rankings, FALSE) = TRUE)
+    ORDER BY v.nutrient_name;
+$$;
+
+CREATE OR REPLACE FUNCTION api.viz2_option_foods(
+    p_nutrient text DEFAULT NULL,
+    p_drv_sex text DEFAULT NULL,
+    p_ref_type text DEFAULT NULL,
+    p_curated_only boolean DEFAULT FALSE
+)
+RETURNS TABLE (
+    food_name text,
+    ranking_category text,
+    include_in_rankings boolean
+)
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT
+        v.food_name,
+        MIN(fdp.ranking_category) AS ranking_category,
+        COALESCE(BOOL_OR(fdp.include_in_rankings), FALSE) AS include_in_rankings
+    FROM public.v_food_drv_coverage v
+    LEFT JOIN public.food_display_profile fdp ON fdp.food_id = v.food_id
+    WHERE (p_nutrient IS NULL OR v.nutrient_name = p_nutrient)
+      AND (p_drv_sex IS NULL OR v.drv_sex = p_drv_sex)
+      AND (p_ref_type IS NULL OR v.ref_type = p_ref_type)
+      AND (NOT p_curated_only OR COALESCE(fdp.include_in_rankings, FALSE) = TRUE)
+    GROUP BY v.food_name
+    ORDER BY v.food_name;
+$$;
+
+CREATE OR REPLACE FUNCTION api.viz2_option_drv_sexes(
+    p_nutrient text DEFAULT NULL,
+    p_ref_type text DEFAULT NULL,
+    p_curated_only boolean DEFAULT FALSE
+)
+RETURNS TABLE (
+    drv_sex text
+)
+LANGUAGE sql
+STABLE
+AS $$
+    WITH values_pool AS (
+        SELECT DISTINCT
+            v.drv_sex
+        FROM public.v_food_drv_coverage v
+        LEFT JOIN public.food_display_profile fdp ON fdp.food_id = v.food_id
+        WHERE (p_nutrient IS NULL OR v.nutrient_name = p_nutrient)
+          AND (p_ref_type IS NULL OR v.ref_type = p_ref_type)
+          AND (NOT p_curated_only OR COALESCE(fdp.include_in_rankings, FALSE) = TRUE)
+    )
+    SELECT
+        values_pool.drv_sex
+    FROM values_pool
+    ORDER BY
+        CASE values_pool.drv_sex
+            WHEN 'Female' THEN 0
+            WHEN 'Male' THEN 1
+            WHEN 'Both genders' THEN 2
+            ELSE 3
+        END,
+        values_pool.drv_sex;
+$$;
+
+CREATE OR REPLACE FUNCTION api.viz2_option_ref_types(
+    p_nutrient text DEFAULT NULL,
+    p_drv_sex text DEFAULT NULL,
+    p_curated_only boolean DEFAULT FALSE
+)
+RETURNS TABLE (
+    ref_type text
+)
+LANGUAGE sql
+STABLE
+AS $$
+    WITH values_pool AS (
+        SELECT DISTINCT
+            v.ref_type
+        FROM public.v_food_drv_coverage v
+        LEFT JOIN public.food_display_profile fdp ON fdp.food_id = v.food_id
+        WHERE (p_nutrient IS NULL OR v.nutrient_name = p_nutrient)
+          AND (p_drv_sex IS NULL OR v.drv_sex = p_drv_sex)
+          AND (NOT p_curated_only OR COALESCE(fdp.include_in_rankings, FALSE) = TRUE)
+    )
+    SELECT
+        values_pool.ref_type
+    FROM values_pool
+    ORDER BY
+        CASE values_pool.ref_type
+            WHEN 'PRI' THEN 0
+            WHEN 'AI' THEN 1
+            ELSE 2
+        END,
+        values_pool.ref_type;
+$$;
+
+CREATE OR REPLACE FUNCTION api.viz2_option_relationship_types()
+RETURNS TABLE (
+    relationship_type text
+)
+LANGUAGE sql
+STABLE
+AS $$
+    WITH values_pool AS (
+        SELECT DISTINCT
+            ig.relationship_type
+        FROM public.v_interaction_graph ig
+    )
+    SELECT
+        values_pool.relationship_type
+    FROM values_pool
+    ORDER BY
+        CASE values_pool.relationship_type
+            WHEN 'synergistic' THEN 0
+            WHEN 'antagonistic' THEN 1
+            WHEN 'varies' THEN 2
+            ELSE 3
+        END,
+        values_pool.relationship_type;
+$$;
+
+CREATE OR REPLACE FUNCTION api.viz2_option_source_nutrients(
+    p_relationship_type text DEFAULT NULL
+)
+RETURNS TABLE (
+    source_nutrient text,
+    target_count bigint
+)
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT
+        ig.source_nutrient,
+        COUNT(DISTINCT ig.target_nutrient)::bigint AS target_count
+    FROM public.v_interaction_graph ig
+    WHERE (p_relationship_type IS NULL OR ig.relationship_type = p_relationship_type)
+    GROUP BY ig.source_nutrient
+    ORDER BY ig.source_nutrient;
+$$;
+
+CREATE OR REPLACE FUNCTION api.viz2_option_target_nutrients(
+    p_requires_antagonists boolean DEFAULT TRUE
+)
+RETURNS TABLE (
+    nutrient_name text,
+    has_antagonists boolean
+)
+LANGUAGE sql
+STABLE
+AS $$
+    WITH nutrient_pool AS (
+        SELECT DISTINCT v.nutrient_name
+        FROM public.v_food_drv_coverage v
+    )
+    SELECT
+        n.nutrient_name,
+        EXISTS (
+            SELECT 1
+            FROM public.v_interaction_graph ig
+            WHERE ig.relationship_type = 'antagonistic'
+              AND (
+                  ig.source_nutrient = n.nutrient_name
+                  OR ig.target_nutrient = n.nutrient_name
+              )
+        ) AS has_antagonists
+    FROM nutrient_pool n
+    WHERE (
+        NOT p_requires_antagonists
+        OR EXISTS (
+            SELECT 1
+            FROM public.v_interaction_graph ig
+            WHERE ig.relationship_type = 'antagonistic'
+              AND (
+                  ig.source_nutrient = n.nutrient_name
+                  OR ig.target_nutrient = n.nutrient_name
+              )
+        )
+    )
+    ORDER BY n.nutrient_name;
 $$;
 
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA api TO web_anon;

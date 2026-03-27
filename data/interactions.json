@@ -2,8 +2,8 @@
   {
     "nutrient": "Vitamin A",
     "synergistic": ["Iodine", "Iron", "Zinc"],
-    "varies": ["Vitamin E"],
-    "antagonistic": ["Vitamin K", "Vitamin D"]
+    "varies": ["Vitamin E", "Vitamin D"],
+    "antagonistic": ["Vitamin K"]
   },
   {
     "nutrient": "Vitamin B1",
@@ -26,12 +26,12 @@
   {
     "nutrient": "Vitamin B5",
     "synergistic": [],
-    "varies": [],
+    "varies": ["Vitamin B7"],
     "antagonistic": ["Copper"]
   },
   {
     "nutrient": "Vitamin B6",
-    "synergistic": [],
+    "synergistic": ["Magnesium"],
     "varies": [],
     "antagonistic": ["Vitamin B1", "Vitamin B9", "Zinc"]
   },
@@ -61,15 +61,15 @@
   },
   {
     "nutrient": "Vitamin D",
-    "synergistic": ["Vitamin A", "Vitamin K", "Calcium", "Magnesium", "Selenium"],
-    "varies": [],
+    "synergistic": ["Calcium", "Magnesium", "Selenium"],
+    "varies": ["Vitamin A", "Vitamin K"],
     "antagonistic": ["Vitamin E"]
   },
   {
     "nutrient": "Vitamin E",
     "synergistic": ["Vitamin C", "Selenium", "Zinc"],
     "varies": ["Vitamin A"],
-    "antagonistic": ["Vitamin D", "Vitamin K"]
+    "antagonistic": ["Vitamin D", "Vitamin K", "Iron"]
   },
   {
     "nutrient": "Vitamin K",
@@ -79,9 +79,9 @@
   },
   {
     "nutrient": "Calcium",
-    "synergistic": ["Vitamin D", "Potassium"],
+    "synergistic": ["Vitamin D", "Potassium", "Vitamin K"],
     "varies": [],
-    "antagonistic": ["Magnesium", "Phosphorus", "Sodium", "Iron", "Manganese", "Zinc"]
+    "antagonistic": ["Magnesium", "Phosphorus", "Sodium", "Iron", "Manganese", "Zinc", "Vitamin B2"]
   },
   {
     "nutrient": "Magnesium",
@@ -97,7 +97,7 @@
   },
   {
     "nutrient": "Potassium",
-    "synergistic": ["Calcium", "Manganese", "Sodium"],
+    "synergistic": ["Calcium", "Manganese", "Sodium", "Magnesium"],
     "varies": [],
     "antagonistic": []
   },
@@ -111,7 +111,7 @@
     "nutrient": "Copper",
     "synergistic": [],
     "varies": ["Vitamin C"],
-    "antagonistic": ["Iron", "Molybdenum", "Selenium", "Zinc"]
+    "antagonistic": ["Iron", "Molybdenum", "Selenium", "Zinc", "Vitamin B5"]
   },
   {
     "nutrient": "Iodine",
@@ -121,19 +121,19 @@
   },
   {
     "nutrient": "Iron",
-    "synergistic": ["Vitamin A", "Vitamin C"],
-    "varies": [],
+    "synergistic": ["Vitamin A"],
+    "varies": ["Vitamin C"],
     "antagonistic": ["Vitamin E", "Calcium", "Copper", "Manganese", "Zinc"]
   },
   {
     "nutrient": "Manganese",
-    "synergistic": [],
+    "synergistic": ["Potassium"],
     "varies": [],
     "antagonistic": ["Calcium", "Iron"]
   },
   {
     "nutrient": "Molybdenum",
-    "synergistic": [],
+    "synergistic": ["Sulfur"],
     "varies": [],
     "antagonistic": ["Copper"]
   },
@@ -145,9 +145,9 @@
   },
   {
     "nutrient": "Zinc",
-    "synergistic": ["Vitamin A", "Vitamin B3"],
+    "synergistic": ["Vitamin A", "Vitamin B3", "Vitamin E"],
     "varies": [],
-    "antagonistic": ["Calcium", "Magnesium", "Copper", "Iron"]
+    "antagonistic": ["Calcium", "Magnesium", "Copper", "Iron", "Vitamin B6", "Vitamin B9"]
   },
   {
     "nutrient": "Sulfur",
