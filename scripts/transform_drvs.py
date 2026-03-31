@@ -145,7 +145,10 @@ def transform():
         "records": records,
     }
 
-    OUTPUT_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
+    OUTPUT_PATH.write_text(
+    json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+    encoding="utf-8"
+    )
     print(f"Wrote {len(records)} records to {OUTPUT_PATH}")
 
 
