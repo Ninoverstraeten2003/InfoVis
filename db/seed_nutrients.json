@@ -280,18 +280,32 @@
     }
   },
   {
-    "canonical_name": "Vitamin A",
+    "canonical_name": "Vitamin A (total)",
     "category": "vitamin",
     "default_unit": "µg RE",
     "infoods_tag": "RAE",
     "aliases": {
       "EFSA": ["Vitamin A"],
-      "CIQUAL": [
-        "Vitamin A activity, retinol equivalent (µg 100mg)",
-        "Retinol (µg 100g)",
-        "Beta-carotene (µg 100g)"
-      ],
+      "CIQUAL": ["Vitamin A activity, retinol equivalent (µg 100mg)"],
       "INTERACTIONS": ["Vitamin A"]
+    }
+  },
+  {
+    "canonical_name": "Retinol",
+    "category": "vitamin",
+    "default_unit": "µg",
+    "infoods_tag": null,
+    "aliases": {
+      "CIQUAL": ["Retinol (µg 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Beta-carotene",
+    "category": "vitamin",
+    "default_unit": "µg",
+    "infoods_tag": null,
+    "aliases": {
+      "CIQUAL": ["Beta-carotene (µg 100g)"]
     }
   },
   {
@@ -368,11 +382,27 @@
       "EFSA": ["Folate"],
       "CIQUAL": [
         "Vitamin B9 or total folates, dietary folate equivalents, DFE (µg 100g)",
-        "Vitamin B9 or total folates (µg 100g)",
-        "Intrinsic folate (µg 100 g)",
-        "Folic acid (enrichment) (µg 100g)"
+        "Vitamin B9 or total folates (µg 100g)"
       ],
       "INTERACTIONS": ["Vitamin B9"]
+    }
+  },
+  {
+    "canonical_name": "Intrinsic folate",
+    "category": "vitamin",
+    "default_unit": "µg",
+    "infoods_tag": null,
+    "aliases": {
+      "CIQUAL": ["Intrinsic folate (µg 100 g)"]
+    }
+  },
+  {
+    "canonical_name": "Folic acid",
+    "category": "vitamin",
+    "default_unit": "µg",
+    "infoods_tag": null,
+    "aliases": {
+      "CIQUAL": ["Folic acid (enrichment) (µg 100g)"]
     }
   },
   {
@@ -398,46 +428,80 @@
     }
   },
   {
-    "canonical_name": "Vitamin D",
+    "canonical_name": "Vitamin D (total)",
     "category": "vitamin",
     "default_unit": "µg",
     "infoods_tag": "VITD-",
     "aliases": {
       "EFSA": ["Vitamin D"],
-      "CIQUAL": [
-        "Vitamin D (µg 100g)",
-        "Vitamin D2 (ergocalciferol) (µg 100g)",
-        "Vitamin D3 (cholecalciferol) (µg 100g)"
-      ],
+      "CIQUAL": ["Vitamin D (µg 100g)"],
       "INTERACTIONS": ["Vitamin D"]
     }
   },
   {
-    "canonical_name": "Vitamin E",
+    "canonical_name": "Vitamin D2",
+    "category": "vitamin",
+    "default_unit": "µg",
+    "infoods_tag": null,
+    "aliases": {
+      "CIQUAL": ["Vitamin D2 (ergocalciferol) (µg 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Vitamin D3",
+    "category": "vitamin",
+    "default_unit": "µg",
+    "infoods_tag": null,
+    "aliases": {
+      "CIQUAL": ["Vitamin D3 (cholecalciferol) (µg 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Vitamin E (total)",
     "category": "vitamin",
     "default_unit": "mg",
     "infoods_tag": "VITE-",
     "aliases": {
       "EFSA": ["Vitamin E"],
-      "CIQUAL": [
-        "Alpha-tocopherol (vitamine E)(mg 100g)",
-        "Vitamin E (mg 100g)"
-      ],
+      "CIQUAL": ["Vitamin E (mg 100g)"],
       "INTERACTIONS": ["Vitamin E"]
     }
   },
   {
-    "canonical_name": "Vitamin K",
+    "canonical_name": "Alpha-tocopherol",
+    "category": "vitamin",
+    "default_unit": "mg",
+    "infoods_tag": null,
+    "aliases": {
+      "CIQUAL": ["Alpha-tocopherol (vitamine E)(mg 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Vitamin K (total)",
+    "category": "vitamin",
+    "default_unit": "µg",
+    "infoods_tag": null,
+    "aliases": {
+      "INTERACTIONS": ["Vitamin K"]
+    }
+  },
+  {
+    "canonical_name": "Vitamin K1",
     "category": "vitamin",
     "default_unit": "µg",
     "infoods_tag": "VITK1",
     "aliases": {
       "EFSA": ["Vitamin K as phylloquinone"],
-      "CIQUAL": [
-        "Vitamin K1 (µg 100g)",
-        "Vitamin K2 (µg 100g)"
-      ],
-      "INTERACTIONS": ["Vitamin K"]
+      "CIQUAL": ["Vitamin K1 (µg 100g)"]
+    }
+  },
+  {
+    "canonical_name": "Vitamin K2",
+    "category": "vitamin",
+    "default_unit": "µg",
+    "infoods_tag": null,
+    "aliases": {
+      "CIQUAL": ["Vitamin K2 (µg 100g)"]
     }
   },
   {

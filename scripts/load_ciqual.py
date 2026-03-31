@@ -88,11 +88,12 @@ def parse_ciqual_value(raw_cell):
 
 
 def extract_unit_from_header(header):
-    """Extract unit from a Ciqual column header like 'Calcium (mg 100g)'."""
-    match = re.search(r"\(([^)]+)\)", header)
-    if match:
-        inside = match.group(1)
-        # Pattern: "mg 100g" → "mg"  or  "µg 100g" → "µg"  or  "g 100g" → "g"
+    """Extract unit from the LAST set of parentheses in the header."""
+    # findall gets all matches: ['vitamine E', 'mg 100g']
+    matches = re.findall(r"\(([^)]+)\)", header)
+    if matches:
+        # Take the last one: 'mg 100g'
+        inside = matches[-1]
         parts = inside.strip().split()
         if len(parts) >= 1:
             return parts[0]

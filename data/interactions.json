@@ -154,5 +154,29 @@
     "synergistic": ["Molybdenum"],
     "varies": [],
     "antagonistic": []
+  },
+  {
+    "nutrient": "Total fat",
+    "synergistic": ["Vitamin A", "Vitamin D", "Vitamin E", "Vitamin K"],
+    "varies": [],
+    "antagonistic": []
+  },
+  {
+    "nutrient": "Dietary fibre",
+    "synergistic": [],
+    "varies": [],
+    "antagonistic": ["Iron", "Zinc", "Calcium", "Magnesium"]
+  },
+  {
+    "nutrient": "Glucose",
+    "synergistic": [],
+    "varies": [],
+    "antagonistic": ["Vitamin C"]
+  },
+  {
+    "nutrient": "Alcohol",
+    "synergistic": [],
+    "varies": [],
+    "antagonistic": ["Vitamin B1", "Vitamin B9", "Magnesium"]
   }
 ]

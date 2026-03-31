@@ -8,7 +8,8 @@
 
 BEGIN;
 
-CREATE SCHEMA IF NOT EXISTS api;
+DROP SCHEMA IF EXISTS api CASCADE;
+CREATE SCHEMA api;
 
 DO $$
 BEGIN
@@ -85,14 +86,14 @@ AS $$
     FROM public.nutrient n
     LEFT JOIN degree_counts dc ON dc.nutrient_name = n.canonical_name
     LEFT JOIN public.v_interaction_graph ig ON ig.source_nutrient = n.canonical_name
-    WHERE COALESCE(dc.degree, 0) > 0
+    -- Removed the WHERE clause to include nutrients with 0 degree
     GROUP BY n.canonical_name, n.category, dc.degree
     ORDER BY total_degree DESC, nutrient_name;
 $$;
 
 CREATE OR REPLACE FUNCTION api.viz1_food_anchors(
     p_selected_nutrient text DEFAULT 'Iron',
-    p_top_n integer DEFAULT 5
+    p_top_n integer DEFAULT 10
 )
 RETURNS TABLE (
     nutrient_name text,
@@ -307,8 +308,6 @@ AS $$
     ORDER BY r.nutrient_name, r.nutrient_rank, r.food_name;
 $$;
 
-DROP FUNCTION IF EXISTS api.viz2_conflict_aware(text,text,text,text,integer);
-DROP FUNCTION IF EXISTS api.viz2_conflict_aware(text,text,text,numeric,integer);
 CREATE OR REPLACE FUNCTION api.viz2_conflict_aware(
     p_target_nutrient text DEFAULT 'Iron',
     p_drv_sex text DEFAULT 'Female',
