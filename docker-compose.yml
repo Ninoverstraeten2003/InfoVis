@@ -15,8 +15,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
       # Init scripts run in alphabetical order on first start
       - ./docker/init:/docker-entrypoint-initdb.d:ro
-      # SQL sources (init scripts reference these as /docker-entrypoint-initdb.d/sql/)
-      - ./db:/docker-entrypoint-initdb.d/sql:ro
+      # SQL sources mounted at a separate path (not nested inside the initdb.d mount)
+      - ./db:/sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d nutriverse"]
       interval: 5s
