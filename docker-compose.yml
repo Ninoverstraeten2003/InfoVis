@@ -1,0 +1,82 @@
+services:
+  # ── 1. PostgreSQL ────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: nutriverse_postgres
+    restart: unless-stopped
+    networks:
+      - nutriverse_internal
+    environment:
+      POSTGRES_DB: nutriverse
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      # Persist data across restarts
+      - postgres_data:/var/lib/postgresql/data
+      # Init scripts run in alphabetical order on first start
+      - ./docker/init:/docker-entrypoint-initdb.d:ro
+      # SQL sources (init scripts reference these as /docker-entrypoint-initdb.d/sql/)
+      - ./db:/docker-entrypoint-initdb.d/sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nutriverse"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  # ── 2. PostgREST ─────────────────────────────────────────────────────────────
+  postgrest:
+    image: postgrest/postgrest:v12.2.3
+    container_name: nutriverse_postgrest
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+      - nutriverse_internal
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.nutriverse-api.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`)
+      - traefik.http.routers.nutriverse-api.entrypoints=web,websecure
+      - traefik.http.routers.nutriverse-api.tls=true
+      - traefik.http.routers.nutriverse-api.tls.certresolver=mytlschallenge
+      - traefik.http.services.nutriverse-api.loadbalancer.server.port=3000
+      - traefik.docker.network=traefik_proxy
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${AUTHENTICATOR_PASSWORD:-change-me}@postgres:5432/nutriverse
+      PGRST_DB_SCHEMAS: api,public
+      PGRST_DB_ANON_ROLE: web_anon
+      PGRST_SERVER_HOST: "0.0.0.0"
+      PGRST_SERVER_PORT: "3000"
+      PGRST_OPENAPI_MODE: follow-privileges
+
+  # ── 3. Data Seeder (runs once, then exits) ───────────────────────────────────
+  seeder:
+    build:
+      context: .
+      dockerfile: docker/seeder/Dockerfile
+    container_name: nutriverse_seeder
+    networks:
+      - nutriverse_internal
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@postgres:5432/nutriverse
+    profiles:
+      - seed
+    volumes:
+      - ./data:/app/data:ro
+      - ./db:/app/db:ro
+      - ./scripts:/app/scripts:ro
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  traefik_proxy:
+    external: true
+  nutriverse_internal:
+    driver: bridge
