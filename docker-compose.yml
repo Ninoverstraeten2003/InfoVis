@@ -68,7 +68,7 @@ services:
     profiles:
       - seed
     volumes:
-      - ./data:/app/data:ro
+      - ./data:/app/data
       - ./db:/app/db:ro
       - ./scripts:/app/scripts:ro
 
