@@ -29,6 +29,19 @@ echo "→ 5/5  load_food_display_profile"
 python scripts/load_food_display_profile.py
 
 echo ""
+echo "── Refresh Materialized Views ──────────────────────"
+echo "→ REFRESH v_food_nutrient_ranked"
+psql "$DATABASE_URL" -c "REFRESH MATERIALIZED VIEW v_food_nutrient_ranked;"
+echo "→ REFRESH v_drv_lookup"
+psql "$DATABASE_URL" -c "REFRESH MATERIALIZED VIEW v_drv_lookup;"
+echo "→ REFRESH v_interaction_graph"
+psql "$DATABASE_URL" -c "REFRESH MATERIALIZED VIEW v_interaction_graph;"
+echo "→ REFRESH v_top_foods_per_nutrient"
+psql "$DATABASE_URL" -c "REFRESH MATERIALIZED VIEW v_top_foods_per_nutrient;"
+echo "→ REFRESH v_food_drv_coverage"
+psql "$DATABASE_URL" -c "REFRESH MATERIALIZED VIEW v_food_drv_coverage;"
+
+echo ""
 echo "── Validations ──────────────────────────────────────"
 python scripts/validate_canonical.py
 python scripts/validate_data_jsons.py
