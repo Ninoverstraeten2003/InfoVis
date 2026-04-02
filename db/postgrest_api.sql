@@ -689,6 +689,133 @@ AS $$
     ORDER BY n.nutrient_name;
 $$;
 
+CREATE OR REPLACE FUNCTION api.calculate_meal_nutrition(
+    p_age_years numeric,
+    p_sex text,
+    p_food_items JSONB,
+    p_life_stage text DEFAULT 'adult',
+    p_pal numeric DEFAULT 1.6,
+    p_body_weight_kg numeric DEFAULT 70.0
+)
+RETURNS TABLE (
+    nutrient_name text,
+    nutrient_category text,
+    consumed_value numeric,
+    target_value numeric,
+    unit text,
+    percentage_met numeric
+)
+LANGUAGE sql
+STABLE
+AS $$
+    WITH parsed_foods AS (
+        SELECT 
+            (item->>'food_id')::INT AS food_id,
+            (item->>'amount_g')::NUMERIC AS amount_g
+        FROM jsonb_array_elements(p_food_items) AS item
+    ),
+    consumed_nutrients AS (
+        SELECT 
+            n.id AS nutrient_id,
+            n.canonical_name,
+            n.category,
+            SUM(fnv.value * (pf.amount_g / 100.0)) AS total_consumed,
+            MAX(n.default_unit) AS unit
+        FROM parsed_foods pf
+        JOIN public.food_nutrient_value fnv ON pf.food_id = fnv.food_id
+        JOIN public.nutrient n ON fnv.nutrient_id = n.id
+        GROUP BY n.id, n.canonical_name, n.category
+    ),
+    best_reference AS (
+        SELECT 
+            drv.nutrient_name,
+            drv.value_numeric,
+            drv.unit,
+            ROW_NUMBER() OVER (
+                PARTITION BY drv.nutrient_name
+                ORDER BY 
+                    -- 1. Prefer PRI > AI > AR...
+                    CASE drv.ref_type
+                        WHEN 'PRI' THEN 1
+                        WHEN 'AI' THEN 2
+                        WHEN 'AR' THEN 3
+                        ELSE 4
+                    END,
+                    -- 2. Prefer exact sex match
+                    CASE WHEN drv.sex = p_sex THEN 1 ELSE 2 END,
+                    -- 3. Prefer closest PAL match (if applicable, e.g. Energy)
+                    ABS(COALESCE(drv.pal, p_pal) - p_pal),
+                    -- 4. Prefer narrowest age band
+                    (COALESCE(drv.age_max, 150) - COALESCE(drv.age_min, 0)) ASC
+            ) as rnk
+        FROM public.v_drv_lookup drv
+        WHERE drv.status = 'value'
+          AND drv.value_numeric IS NOT NULL
+          AND (drv.sex = p_sex OR drv.sex = 'Both genders' OR drv.sex IS NULL)
+          AND (drv.life_stage = p_life_stage OR drv.life_stage IS NULL)
+          AND (drv.age_unit = 'years' AND p_age_years >= COALESCE(drv.age_min, 0) AND p_age_years <= COALESCE(drv.age_max, 150))
+    ),
+    raw_results AS (
+        SELECT 
+            cn.canonical_name AS nutrient_name,
+            cn.category AS nutrient_category,
+            cn.total_consumed AS consumed_value,
+            CASE
+                WHEN cn.unit = 'kJ' AND ir.unit = 'MJ/day' THEN ir.value_numeric * 1000
+                WHEN cn.unit = 'mg' AND ir.unit = 'g/day'  THEN ir.value_numeric * 1000
+                WHEN cn.unit = 'g' AND ir.unit = 'mg/day'  THEN ir.value_numeric / 1000
+                WHEN cn.unit = 'g' AND ir.unit = 'L/day' THEN ir.value_numeric * 1000
+                WHEN cn.unit = 'g' AND ir.unit LIKE 'mg/day%' THEN ir.value_numeric / 1000
+                WHEN cn.unit IN ('µg', 'μg', 'µg DFE', 'μg DFE', 'µg RE', 'μg RE') AND ir.unit = 'mg/day' THEN ir.value_numeric * 1000
+                WHEN cn.unit = 'g' AND ir.unit = 'g/kg bw per day' THEN ir.value_numeric * p_body_weight_kg
+                WHEN cn.unit = 'mg' AND ir.unit = 'mg/MJ' THEN ir.value_numeric * et.mj
+                WHEN cn.unit LIKE 'mg%' AND ir.unit = 'mg NE/MJ' THEN ir.value_numeric * et.mj
+                WHEN cn.unit = 'g' AND ir.unit = 'E%' AND cn.category = 'lipid' THEN (ir.value_numeric / 100.0) * (et.mj * 1000.0) / 37.0
+                WHEN cn.unit = 'g' AND ir.unit = 'E%' AND cn.category = 'macro' THEN (ir.value_numeric / 100.0) * (et.mj * 1000.0) / 17.0
+                ELSE ir.value_numeric
+            END AS target_value,
+            cn.unit AS unit
+        FROM consumed_nutrients cn
+        LEFT JOIN best_reference ir 
+            ON cn.canonical_name = ir.nutrient_name AND ir.rnk = 1
+        CROSS JOIN (
+            SELECT COALESCE((SELECT value_numeric FROM best_reference WHERE nutrient_name = 'Energy' AND rnk = 1 LIMIT 1), 0) AS mj
+        ) et
+    )
+    SELECT 
+        nutrient_name,
+        nutrient_category,
+        CASE 
+            WHEN nutrient_name = 'Energy' THEN ROUND(consumed_value / 4.184, 0)
+            ELSE ROUND(consumed_value, 2)
+        END AS consumed_value,
+        CASE 
+            WHEN nutrient_name = 'Energy' THEN ROUND(target_value / 4.184, 0)
+            ELSE ROUND(target_value, 2)
+        END AS target_value,
+        CASE 
+            WHEN nutrient_name = 'Energy' THEN 'kcal'
+            ELSE unit
+        END AS unit,
+        CASE 
+            WHEN target_value > 0 THEN ROUND((consumed_value / NULLIF(target_value, 0)) * 100, 2)
+            ELSE NULL 
+        END AS percentage_met
+    FROM raw_results
+    ORDER BY 
+        nutrient_category, nutrient_name;
+$$;
+
+CREATE OR REPLACE VIEW api.food_options AS
+SELECT 
+    id AS food_id,
+    name AS food_name,
+    group_name AS food_category
+FROM public.food
+ORDER BY name;
+
+GRANT SELECT ON api.food_options TO web_anon;
+
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA api TO web_anon;
 ALTER DEFAULT PRIVILEGES IN SCHEMA api
     GRANT EXECUTE ON FUNCTIONS TO web_anon;
