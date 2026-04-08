@@ -23,54 +23,54 @@ DATABASE_URL = os.environ.get(
 # Canonical mapping of FAOSTAT items to exactly known CIQUAL names
 FAO_TO_CIQUAL_MAPPING = {
     # Cereals
-    "Wheat": "Wheat grain, whole",
-    "Maize (corn)": "Sweet corn, raw",
-    "Rice": "Rice, brown, raw",
-    "Triticale": "Wheat grain, whole",
-    "Millet": "Millet, raw",
-    "Sorghum": "Sorghum, raw",
+    "Wheat": "Wheat bran",   # Representative cereal mapping
+    "Maize (corn)": "Maize/corn starch", 
+    "Rice": "Rice flour",
+    "Triticale": "Wheat bran",
+    "Millet": "Millet, wholegrain, raw",
+    "Sorghum": "Sorghum, wholegrain, raw",
     
     # Root & Tubers
-    "Potatoes": "Potato, raw",
+    "Potatoes": "Potato, new, raw",
     "Cassava, fresh": "Cassava or manioc, root, raw",
     "Sweet potatoes": "Sweet potato, raw",
     "Yams": "Yam, raw",
     
     # Pulses & Nuts
-    "Soya beans": "Soybean, raw",
-    "Beans, dry": "Kidney bean, raw",
-    "Peas, dry": "Pea, split, raw",
-    "Chick peas, dry": "Chickpea, raw",
-    "Lentils, dry": "Lentil, green, raw",
-    "Groundnuts, excluding shelled": "Peanut, raw",
+    "Soya beans": "Soybean, seed, whole",
+    "Beans, dry": "Red kidney bean, dried",
+    "Peas, dry": "Split pea, dried",
+    "Chick peas, dry": "Chick pea, dried",
+    "Lentils, dry": "Lentil, dried (average)",
+    "Groundnuts, excluding shelled": "Peanut, no added salt",
     
     # Seeds
     "Sunflower seed": "Sunflower seed",
     "Sesame seed": "Sesame seed",
-    "Mustard seed": "Mustard seed",
+    "Mustard seed": "Mustard",
     
     # Vegetables & Fruits
     "Tomatoes": "Tomato, raw",
-    "Cabbages": "Cabbage, green, raw",
+    "Cabbages": "White cabbage, raw",
     "Carrots and turnips": "Carrot, raw",
     "Onions and shallots, dry (excluding dehydrated)": "Onion, raw",
-    "Apples": "Apple, raw",
+    "Apples": "Apple nectar",
     "Bananas": "Banana, raw",
-    "Plantains and others": "Plantain, raw",
-    "Mangoes, guavas and mangosteens": "Mango, raw",
-    "Papayas": "Papaya, raw",
-    "Oranges": "Orange, raw",
+    "Plantains and others": "Plantain banana, raw",
+    "Mangoes, guavas and mangosteens": "Mango, flesh without skin, pitted, raw",
+    "Papayas": "Papaya, flesh without skin, raw",
+    "Oranges": "Orange nectar",
     
     # Animal Products
-    "Raw milk of cattle": "Cow milk, whole, raw",
+    "Raw milk of cattle": "Milk, bulk",
     "Raw milk of goats": "Goat milk, whole, raw",
-    "Raw milk of sheep": "Sheep milk, whole, raw",
-    "Hen eggs in shell, fresh": "Egg, chicken, whole, raw",
-    "Meat of cattle with the bone, fresh or chilled": "Beef, meat, raw",
-    "Meat of pig with the bone, fresh or chilled": "Pork, meat, raw",
+    "Raw milk of sheep": "Sheep milk, whole",
+    "Hen eggs in shell, fresh": "Egg, raw",
+    "Meat of cattle with the bone, fresh or chilled": "Beef, chuck, raw",
+    "Meat of pig with the bone, fresh or chilled": "Pork, chop, raw",
     "Meat of chickens, fresh or chilled": "Chicken, meat, raw",
     "Meat of sheep, fresh or chilled": "Mutton, meat, raw",
-    "Meat of goat, fresh or chilled": "Goat, meat, raw"
+    "Meat of goat, fresh or chilled": "Goat map, skip"
 }
 
 def load():
