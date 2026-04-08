@@ -693,9 +693,10 @@ CREATE OR REPLACE FUNCTION api.calculate_meal_nutrition(
     p_age_years numeric,
     p_sex text,
     p_food_items JSONB,
-    p_life_stage text DEFAULT 'adult',
+    p_life_stage text DEFAULT NULL,
     p_pal numeric DEFAULT 1.6,
-    p_body_weight_kg numeric DEFAULT 70.0
+    p_body_weight_kg numeric DEFAULT 70.0,
+    p_population_label text DEFAULT NULL
 )
 RETURNS TABLE (
     nutrient_name text,
@@ -708,7 +709,26 @@ RETURNS TABLE (
 LANGUAGE sql
 STABLE
 AS $$
-    WITH parsed_foods AS (
+    WITH input_context AS (
+        SELECT
+            CASE
+                WHEN p_sex IS NULL THEN NULL
+                WHEN lower(trim(p_sex)) = 'male' THEN 'Male'
+                WHEN lower(trim(p_sex)) = 'female' THEN 'Female'
+                WHEN lower(trim(p_sex)) IN ('both genders', 'both', 'all') THEN 'Both genders'
+                ELSE p_sex
+            END AS normalized_sex,
+            COALESCE(
+                NULLIF(trim(p_life_stage), ''),
+                CASE
+                    WHEN p_age_years < 1 THEN 'infant'
+                    WHEN p_age_years < 18 THEN 'child'
+                    ELSE 'adult'
+                END
+            ) AS effective_life_stage,
+            NULLIF(trim(p_population_label), '') AS effective_population_label
+    ),
+    parsed_foods AS (
         SELECT 
             (item->>'food_id')::INT AS food_id,
             (item->>'amount_g')::NUMERIC AS amount_g
@@ -741,19 +761,40 @@ AS $$
                         WHEN 'AR' THEN 3
                         ELSE 4
                     END,
-                    -- 2. Prefer exact sex match
-                    CASE WHEN drv.sex = p_sex THEN 1 ELSE 2 END,
-                    -- 3. Prefer closest PAL match (if applicable, e.g. Energy)
+                    -- 2. Prefer exact cohort label when explicitly requested.
+                    CASE
+                        WHEN ic.effective_population_label IS NOT NULL
+                             AND drv.population_label = ic.effective_population_label THEN 0
+                        WHEN ic.effective_population_label IS NOT NULL THEN 1
+                        WHEN drv.population_label = 'Adults' THEN 0
+                        WHEN drv.population_label = 'Children' THEN 0
+                        WHEN drv.population_label = 'Infants' THEN 0
+                        WHEN POSITION('(' IN drv.population_label) = 0 THEN 1
+                        WHEN drv.population_label ILIKE '%LPI 600 mg/day%' THEN 2
+                        WHEN drv.population_label ILIKE '%LPI 900 mg/day%' THEN 3
+                        WHEN drv.population_label ILIKE '%LPI 300 mg/day%' THEN 4
+                        WHEN drv.population_label ILIKE '%LPI 1200 mg/day%' THEN 5
+                        ELSE 6
+                    END,
+                    -- 3. Prefer exact sex match
+                    CASE WHEN drv.sex = ic.normalized_sex THEN 1 ELSE 2 END,
+                    -- 4. Prefer closest PAL match (if applicable, e.g. Energy)
                     ABS(COALESCE(drv.pal, p_pal) - p_pal),
-                    -- 4. Prefer narrowest age band
-                    (COALESCE(drv.age_max, 150) - COALESCE(drv.age_min, 0)) ASC
+                    -- 5. Prefer narrowest age band
+                    (COALESCE(drv.age_max, 150) - COALESCE(drv.age_min, 0)) ASC,
+                    drv.population_label
             ) as rnk
         FROM public.v_drv_lookup drv
+        CROSS JOIN input_context ic
         WHERE drv.status = 'value'
           AND drv.value_numeric IS NOT NULL
-          AND (drv.sex = p_sex OR drv.sex = 'Both genders' OR drv.sex IS NULL)
-          AND (drv.life_stage = p_life_stage OR drv.life_stage IS NULL)
+          AND (drv.sex = ic.normalized_sex OR drv.sex = 'Both genders' OR drv.sex IS NULL)
+          AND (drv.life_stage = ic.effective_life_stage OR drv.life_stage IS NULL)
           AND (drv.age_unit = 'years' AND p_age_years >= COALESCE(drv.age_min, 0) AND p_age_years <= COALESCE(drv.age_max, 150))
+          AND (
+              ic.effective_population_label IS NULL
+              OR drv.population_label = ic.effective_population_label
+          )
     ),
     raw_results AS (
         SELECT 
