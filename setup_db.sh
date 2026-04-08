@@ -25,16 +25,18 @@ python scripts/transform_drvs.py
 
 echo ""
 echo "Running Data Loaders..."
-echo "-> 1/5: scripts/seed_canonical.py"
+echo "-> 1/6: scripts/seed_canonical.py"
 python scripts/seed_canonical.py
-echo "-> 2/5: scripts/load_efsa_drvs.py"
+echo "-> 2/6: scripts/load_efsa_drvs.py"
 python scripts/load_efsa_drvs.py
-echo "-> 3/5: scripts/load_ciqual.py"
+echo "-> 3/6: scripts/load_ciqual.py"
 python scripts/load_ciqual.py
-echo "-> 4/5: scripts/load_interactions.py"
+echo "-> 4/6: scripts/load_interactions.py"
 python scripts/load_interactions.py
-echo "-> 5/5: scripts/load_food_display_profile.py"
+echo "-> 5/6: scripts/load_food_display_profile.py"
 python scripts/load_food_display_profile.py
+echo "-> 6/6: scripts/load_gnr.py"
+python scripts/load_gnr.py
 
 echo ""
 echo "Refreshing Materialized Views..."

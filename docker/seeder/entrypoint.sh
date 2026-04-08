@@ -13,20 +13,23 @@ python scripts/transform_drvs.py
 
 echo ""
 echo "── Data Loaders ─────────────────────────────────────"
-echo "→ 1/5  seed_canonical"
+echo "→ 1/6  seed_canonical"
 python scripts/seed_canonical.py
 
-echo "→ 2/5  load_efsa_drvs"
+echo "→ 2/6  load_efsa_drvs"
 python scripts/load_efsa_drvs.py
 
-echo "→ 3/5  load_ciqual"
+echo "→ 3/6  load_ciqual"
 python scripts/load_ciqual.py
 
-echo "→ 4/5  load_interactions"
+echo "→ 4/6  load_interactions"
 python scripts/load_interactions.py
 
-echo "→ 5/5  load_food_display_profile"
+echo "→ 5/6  load_food_display_profile"
 python scripts/load_food_display_profile.py
+
+echo "→ 6/6  load_gnr"
+python scripts/load_gnr.py
 
 echo ""
 echo "── Refresh Materialized Views ──────────────────────"

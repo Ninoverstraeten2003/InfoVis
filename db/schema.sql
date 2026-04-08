@@ -198,3 +198,124 @@ CREATE INDEX idx_nrel_left  ON nutrient_relationship(left_nutrient_id);
 CREATE INDEX idx_nrel_right ON nutrient_relationship(right_nutrient_id);
 
 COMMIT;
+-- NutriVerse Viz3 Schema Extension: Country Nutritional Profiles
+-- Source: Global Nutrition Report — Country Nutrition Profiles (February 2023)
+-- =============================================================================
+-- Run AFTER schema.sql:
+--   psql nutriverse -f db/schema_viz3.sql
+-- =============================================================================
+
+BEGIN;
+
+-- ---------------------------------------------------------------------------
+-- 13. country — canonical country table (ISO 3166-1 alpha-3)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS country (
+    id              SERIAL PRIMARY KEY,
+    iso3            TEXT NOT NULL UNIQUE,                 -- ISO 3166-1 alpha-3, e.g. 'AFG'
+    name            TEXT NOT NULL,                        -- display name
+    region          TEXT,                                 -- 'Africa', 'Asia', 'Europe', …
+    subregion       TEXT                                  -- 'Southern Asia', …
+);
+
+CREATE INDEX IF NOT EXISTS idx_country_iso3   ON country(iso3);
+CREATE INDEX IF NOT EXISTS idx_country_region ON country(region);
+
+-- ---------------------------------------------------------------------------
+-- 14. country_deficiency_indicator
+--     Stores one named time-series value per country per indicator.
+--     Indicator codes:
+--       'anaemia'        — adult anaemia prevalence, women 15-49 (%)
+--       'stunting'       — child stunting 0-59 months (%)
+--       'wasting'        — child wasting  0-59 months (%)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS country_deficiency_indicator (
+    id              SERIAL PRIMARY KEY,
+    source_row_id   INT REFERENCES source_row(id) ON DELETE CASCADE,
+    country_id      INT NOT NULL REFERENCES country(id) ON DELETE CASCADE,
+    indicator       TEXT NOT NULL                         -- 'anaemia', 'stunting', 'wasting'
+                    CHECK (indicator IN ('anaemia', 'stunting', 'wasting')),
+    year            INT NOT NULL,
+    value           NUMERIC NOT NULL,                     -- percentage (0-100)
+    disaggregation  TEXT,                                 -- 'all_women', 'sex_both', etc.
+    UNIQUE (country_id, indicator, year, disaggregation)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cdi_country   ON country_deficiency_indicator(country_id);
+CREATE INDEX IF NOT EXISTS idx_cdi_indicator ON country_deficiency_indicator(indicator);
+CREATE INDEX IF NOT EXISTS idx_cdi_year      ON country_deficiency_indicator(year);
+
+-- ---------------------------------------------------------------------------
+-- 15. country_nutrition_track
+--     UN target progress status per indicator (from Country glance sheet).
+--     Values: 'On course', 'Some progress', 'No progress or worsening', 'No data'
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS country_nutrition_track (
+    id              SERIAL PRIMARY KEY,
+    source_row_id   INT REFERENCES source_row(id) ON DELETE CASCADE,
+    country_id      INT NOT NULL REFERENCES country(id) ON DELETE CASCADE,
+    indicator       TEXT NOT NULL                         -- 'anaemia', 'stunting', 'wasting', 'lbw'
+                    CHECK (indicator IN ('anaemia', 'stunting', 'wasting', 'lbw')),
+    track_status    TEXT NOT NULL,                        -- 'On course', 'Some progress', …
+    UNIQUE (country_id, indicator)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cnt_country   ON country_nutrition_track(country_id);
+CREATE INDEX IF NOT EXISTS idx_cnt_indicator ON country_nutrition_track(indicator);
+
+-- ---------------------------------------------------------------------------
+-- 16. country_poverty_indicator
+--     World Bank poverty headcount ratios (from Country social sheet).
+--     Poverty lines: '$1.90/day' and '$3.20/day'
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS country_poverty_indicator (
+    id              SERIAL PRIMARY KEY,
+    source_row_id   INT REFERENCES source_row(id) ON DELETE CASCADE,
+    country_id      INT NOT NULL REFERENCES country(id) ON DELETE CASCADE,
+    poverty_line    TEXT NOT NULL                         -- '1.90' or '3.20'
+                    CHECK (poverty_line IN ('1.90', '3.20')),
+    year            INT NOT NULL,
+    value           NUMERIC NOT NULL,                     -- % population below line
+    UNIQUE (country_id, poverty_line, year)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cpi_country      ON country_poverty_indicator(country_id);
+CREATE INDEX IF NOT EXISTS idx_cpi_poverty_line ON country_poverty_indicator(poverty_line);
+CREATE INDEX IF NOT EXISTS idx_cpi_year         ON country_poverty_indicator(year);
+
+-- ---------------------------------------------------------------------------
+-- 17. region_deficiency_indicator
+--     Region-level aggregates mirroring country_deficiency_indicator.
+--     Enables rich-vs-poor region comparison.
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS region_deficiency_indicator (
+    id              SERIAL PRIMARY KEY,
+    region          TEXT NOT NULL,
+    indicator       TEXT NOT NULL
+                    CHECK (indicator IN ('anaemia', 'stunting', 'wasting')),
+    year            INT NOT NULL,
+    value           NUMERIC NOT NULL,
+    UNIQUE (region, indicator, year)
+);
+
+CREATE INDEX IF NOT EXISTS idx_rdi_region    ON region_deficiency_indicator(region);
+CREATE INDEX IF NOT EXISTS idx_rdi_indicator ON region_deficiency_indicator(indicator);
+
+-- ---------------------------------------------------------------------------
+-- 18. region_poverty_indicator
+--     Region-level poverty aggregates.
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS region_poverty_indicator (
+    id              SERIAL PRIMARY KEY,
+    region          TEXT NOT NULL,
+    poverty_line    TEXT NOT NULL
+                    CHECK (poverty_line IN ('1.90', '3.20')),
+    year            INT NOT NULL,
+    value           NUMERIC NOT NULL,
+    UNIQUE (region, poverty_line, year)
+);
+
+CREATE INDEX IF NOT EXISTS idx_rpi_region      ON region_poverty_indicator(region);
+CREATE INDEX IF NOT EXISTS idx_rpi_poverty_line ON region_poverty_indicator(poverty_line);
+
+COMMIT;

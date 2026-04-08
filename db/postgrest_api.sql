@@ -823,3 +823,145 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA api
 COMMIT;
 
 NOTIFY pgrst, 'reload schema';
+-- PostgREST API setup for NutriVerse Viz 3
+-- =============================================================================
+-- Run AFTER db/postgrest_api.sql:
+--   psql nutriverse -f db/postgrest_api_viz3.sql
+-- =============================================================================
+
+BEGIN;
+
+-- ---------------------------------------------------------------------------
+-- api.viz3_country_profiles
+-- Main endpoint for the Choropleth map and Paradox Panel. 
+-- Joins the latest deficiency data with poverty data and UN track statuses
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION api.viz3_country_profiles(
+    p_indicator text DEFAULT 'anaemia'
+)
+RETURNS TABLE (
+    iso3 text,
+    country_name text,
+    region text,
+    latest_value numeric,
+    latest_year int,
+    track_status text,
+    poverty_190 numeric,
+    poverty_190_year int,
+    trend_data jsonb
+)
+LANGUAGE sql
+STABLE
+AS $$
+    WITH latest_deficiency AS (
+        SELECT 
+            country_id, 
+            value AS latest_value,
+            year AS latest_year
+        FROM (
+            SELECT 
+                country_id, 
+                value, 
+                year,
+                ROW_NUMBER() OVER (PARTITION BY country_id ORDER BY year DESC) as rn
+            FROM public.country_deficiency_indicator
+            WHERE indicator = p_indicator
+        ) r WHERE rn = 1
+    ),
+    trend AS (
+        SELECT 
+            country_id, 
+            jsonb_object_agg(year::text, value ORDER BY year) as trend_data
+        FROM public.country_deficiency_indicator
+        WHERE indicator = p_indicator
+        GROUP BY country_id
+    ),
+    latest_poverty AS (
+        SELECT 
+            country_id, 
+            value AS poverty_190,
+            year AS poverty_190_year
+        FROM (
+            SELECT 
+                country_id, 
+                value, 
+                year,
+                ROW_NUMBER() OVER (PARTITION BY country_id ORDER BY year DESC) as rn
+            FROM public.country_poverty_indicator
+            WHERE poverty_line = '1.90'
+        ) r WHERE rn = 1
+    )
+    SELECT 
+        c.iso3,
+        c.name AS country_name,
+        c.region,
+        ld.latest_value,
+        ld.latest_year,
+        cnt.track_status,
+        lp.poverty_190,
+        lp.poverty_190_year,
+        t.trend_data
+    FROM public.country c
+    JOIN latest_deficiency ld ON c.id = ld.country_id
+    LEFT JOIN trend t ON c.id = t.country_id
+    LEFT JOIN public.country_nutrition_track cnt ON c.id = cnt.country_id AND cnt.indicator = p_indicator
+    LEFT JOIN latest_poverty lp ON c.id = lp.country_id
+    ORDER BY c.name;
+$$;
+
+GRANT EXECUTE ON FUNCTION api.viz3_country_profiles(text) TO web_anon;
+
+-- ---------------------------------------------------------------------------
+-- api.viz3_region_comparison
+-- Endpoint for Rich vs Poor region comparison
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION api.viz3_region_comparison(
+    p_indicator text DEFAULT 'stunting'
+)
+RETURNS TABLE (
+    region text,
+    latest_deficiency_value numeric,
+    latest_deficiency_year int,
+    latest_poverty_190 numeric,
+    latest_poverty_190_year int
+)
+LANGUAGE sql
+STABLE
+AS $$
+    WITH latest_defic AS (
+        SELECT r.region, SUM(c.latest_value * 1) / COUNT(c.latest_value) as latest_deficiency_value, MAX(c.latest_year) as latest_deficiency_year
+        FROM public.country r
+        JOIN (
+             SELECT country_id, value AS latest_value, year AS latest_year,
+                    ROW_NUMBER() OVER (PARTITION BY country_id ORDER BY year DESC) as rn
+             FROM public.country_deficiency_indicator WHERE indicator = p_indicator
+        ) c on r.id = c.country_id and c.rn = 1
+        GROUP BY r.region
+    ),
+    latest_pov AS (
+        SELECT r.region, SUM(c.poverty_190 * 1) / COUNT(c.poverty_190) as latest_poverty_190, MAX(c.poverty_190_year) as latest_poverty_190_year
+        FROM public.country r
+        JOIN (
+             SELECT country_id, value AS poverty_190, year AS poverty_190_year,
+                    ROW_NUMBER() OVER (PARTITION BY country_id ORDER BY year DESC) as rn
+             FROM public.country_poverty_indicator WHERE poverty_line = '1.90'
+        ) c on r.id = c.country_id and c.rn = 1
+        GROUP BY r.region
+    )
+    SELECT
+        COALESCE(ld.region, lp.region) as region,
+        ld.latest_deficiency_value,
+        ld.latest_deficiency_year,
+        lp.latest_poverty_190,
+        lp.latest_poverty_190_year
+    FROM latest_defic ld
+    FULL OUTER JOIN latest_pov lp ON ld.region = lp.region
+    WHERE COALESCE(ld.region, lp.region) IS NOT NULL
+    ORDER BY lp.latest_poverty_190 DESC NULLS LAST;
+$$;
+
+GRANT EXECUTE ON FUNCTION api.viz3_region_comparison(text) TO web_anon;
+
+COMMIT;
+
+NOTIFY pgrst, 'reload schema';
