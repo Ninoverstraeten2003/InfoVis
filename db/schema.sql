@@ -319,3 +319,30 @@ CREATE INDEX IF NOT EXISTS idx_rpi_region      ON region_poverty_indicator(regio
 CREATE INDEX IF NOT EXISTS idx_rpi_poverty_line ON region_poverty_indicator(poverty_line);
 
 COMMIT;
+
+-- NutriVerse Viz3 Schema Extension: Country Food Production (FAOSTAT)
+-- =============================================================================
+
+BEGIN;
+
+-- ---------------------------------------------------------------------------
+-- 19. country_food_production
+--     Stores FAOSTAT production quantity (tonnes) per country per item per year.
+--     Includes mapped canonical CIQUAL food_id where applicable.
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS country_food_production (
+    id              SERIAL PRIMARY KEY,
+    source_row_id   INT REFERENCES source_row(id) ON DELETE CASCADE,
+    country_id      INT NOT NULL REFERENCES country(id) ON DELETE CASCADE,
+    faostat_item    TEXT NOT NULL,
+    mapped_food_id  INT REFERENCES food(id) ON DELETE SET NULL,
+    year            INT NOT NULL,
+    value_tonnes    NUMERIC NOT NULL,
+    UNIQUE (country_id, faostat_item, year)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cfp_country ON country_food_production(country_id);
+CREATE INDEX IF NOT EXISTS idx_cfp_item    ON country_food_production(faostat_item);
+CREATE INDEX IF NOT EXISTS idx_cfp_year    ON country_food_production(year);
+
+COMMIT;

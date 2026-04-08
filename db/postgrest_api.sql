@@ -889,7 +889,8 @@ RETURNS TABLE (
     track_status text,
     poverty_190 numeric,
     poverty_190_year int,
-    trend_data jsonb
+    trend_data jsonb,
+    production_data jsonb
 )
 LANGUAGE sql
 STABLE
@@ -931,6 +932,29 @@ AS $$
             FROM public.country_poverty_indicator
             WHERE poverty_line = '1.90'
         ) r WHERE rn = 1
+    ),
+    latest_food_production AS (
+        SELECT
+            country_id,
+            jsonb_agg(
+                jsonb_build_object(
+                    'food', faostat_item,
+                    'mapped_food_id', mapped_food_id,
+                    'tonnes', value_tonnes,
+                    'year', year
+                ) ORDER BY value_tonnes DESC
+            ) as production_data
+        FROM (
+            SELECT 
+                country_id,
+                faostat_item,
+                mapped_food_id,
+                value_tonnes,
+                year,
+                ROW_NUMBER() OVER (PARTITION BY country_id, faostat_item ORDER BY year DESC) as rn
+            FROM public.country_food_production
+        ) r WHERE rn = 1
+        GROUP BY country_id
     )
     SELECT 
         c.iso3,
@@ -941,12 +965,14 @@ AS $$
         cnt.track_status,
         lp.poverty_190,
         lp.poverty_190_year,
-        t.trend_data
+        t.trend_data,
+        lfp.production_data
     FROM public.country c
     JOIN latest_deficiency ld ON c.id = ld.country_id
     LEFT JOIN trend t ON c.id = t.country_id
     LEFT JOIN public.country_nutrition_track cnt ON c.id = cnt.country_id AND cnt.indicator = p_indicator
     LEFT JOIN latest_poverty lp ON c.id = lp.country_id
+    LEFT JOIN latest_food_production lfp ON c.id = lfp.country_id
     ORDER BY c.name;
 $$;
 

@@ -28,8 +28,11 @@ python scripts/load_interactions.py
 echo "→ 5/6  load_food_display_profile"
 python scripts/load_food_display_profile.py
 
-echo "→ 6/6  load_gnr"
+echo "→ 6/7  load_gnr"
 python scripts/load_gnr.py
+
+echo "→ 7/7  load_faostat"
+python scripts/load_faostat.py
 
 echo ""
 echo "── Refresh Materialized Views ──────────────────────"

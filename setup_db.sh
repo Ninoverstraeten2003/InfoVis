@@ -35,8 +35,10 @@ echo "-> 4/6: scripts/load_interactions.py"
 python scripts/load_interactions.py
 echo "-> 5/6: scripts/load_food_display_profile.py"
 python scripts/load_food_display_profile.py
-echo "-> 6/6: scripts/load_gnr.py"
+echo "-> 6/7: scripts/load_gnr.py"
 python scripts/load_gnr.py
+echo "-> 7/7: scripts/load_faostat.py"
+python scripts/load_faostat.py
 
 echo ""
 echo "Refreshing Materialized Views..."
