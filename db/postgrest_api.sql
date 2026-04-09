@@ -1029,6 +1029,41 @@ $$;
 
 GRANT EXECUTE ON FUNCTION api.viz3_region_comparison(text) TO web_anon;
 
+-- ---------------------------------------------------------------------------
+-- api.viz3_all_country_deficiencies
+-- Endpoint to fetch all country deficiency indicator data over time
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION api.viz3_all_country_deficiencies(
+    p_indicator text DEFAULT NULL
+)
+RETURNS TABLE (
+    iso3 text,
+    country_name text,
+    region text,
+    indicator text,
+    year int,
+    value numeric,
+    disaggregation text
+)
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT 
+        c.iso3,
+        c.name AS country_name,
+        c.region,
+        cdi.indicator,
+        cdi.year,
+        cdi.value,
+        cdi.disaggregation
+    FROM public.country_deficiency_indicator cdi
+    JOIN public.country c ON c.id = cdi.country_id
+    WHERE (p_indicator IS NULL OR cdi.indicator = p_indicator)
+    ORDER BY c.name, cdi.indicator, cdi.year DESC;
+$$;
+
+GRANT EXECUTE ON FUNCTION api.viz3_all_country_deficiencies(text) TO web_anon;
+
 COMMIT;
 
 NOTIFY pgrst, 'reload schema';
