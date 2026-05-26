@@ -155,20 +155,46 @@ RETURNS TABLE (
 LANGUAGE sql
 STABLE
 AS $$
-    SELECT
-        v.food_name,
-        v.nutrient_name,
-        v.food_value_per_100g,
-        v.pct_drv_per_100g,
-        v.pct_drv_per_100g_capped,
-        v.drv_sex,
-        v.age_label,
-        v.ref_type
-    FROM public.v_food_drv_coverage v
-    WHERE v.nutrient_name = p_nutrient
-      AND v.drv_sex = p_drv_sex
-      AND v.ref_type = p_ref_type
-    ORDER BY v.pct_drv_per_100g DESC NULLS LAST
+    WITH ranked_foods AS (
+        SELECT
+            v.food_name,
+            v.nutrient_name,
+            v.food_value_per_100g,
+            v.pct_drv_per_100g,
+            v.pct_drv_per_100g_capped,
+            v.drv_sex,
+            v.age_label,
+            v.ref_type,
+            lower(trim(split_part(v.food_name, ',', 1))) as base_food_name
+        FROM public.v_food_drv_coverage v
+        WHERE v.nutrient_name = p_nutrient
+          AND v.drv_sex = p_drv_sex
+          AND v.ref_type = p_ref_type
+    ),
+    deduplicated_foods AS (
+        SELECT DISTINCT ON (base_food_name)
+            food_name,
+            nutrient_name,
+            food_value_per_100g,
+            pct_drv_per_100g,
+            pct_drv_per_100g_capped,
+            drv_sex,
+            age_label,
+            ref_type
+        FROM ranked_foods
+        ORDER BY base_food_name, pct_drv_per_100g DESC NULLS LAST
+    )
+    SELECT 
+        food_name,
+        nutrient_name,
+        food_value_per_100g,
+        pct_drv_per_100g,
+        pct_drv_per_100g_capped,
+        drv_sex,
+        age_label,
+        ref_type
+    FROM deduplicated_foods
+    ORDER BY pct_drv_per_100g DESC NULLS LAST
     LIMIT GREATEST(p_limit, 1);
 $$;
 

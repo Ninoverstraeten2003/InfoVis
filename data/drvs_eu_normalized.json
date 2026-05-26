@@ -12275,7 +12275,7 @@
         "raw": "≥ 18 years",
         "min": 18.0,
         "max": null,
-        "unit": "years",
+        "unit" : "years",
         "comparator": ">=",
         "pal": null
       },

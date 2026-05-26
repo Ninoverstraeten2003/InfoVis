@@ -158,11 +158,37 @@ JOIN nutrient nr ON nr.id = nrel.right_nutrient_id;
 
 -- =====================================================================
 -- VIEW 4: v_top_foods_per_nutrient
--- Pre-computed top 20 foods per nutrient (measured values only).
+-- Pre-computed top 20 foods per nutrient (measured values only), deduplicated by base ingredient.
 -- Powers "top foods for iron" dashboards without repeatedly sorting.
 -- =====================================================================
 CREATE MATERIALIZED VIEW v_top_foods_per_nutrient AS
-WITH ranked AS (
+WITH ranked_foods AS (
+    SELECT
+        nutrient_id,
+        nutrient_name,
+        nutrient_category,
+        food_id,
+        food_name,
+        group_name,
+        value,
+        unit,
+        lower(trim(split_part(food_name, ',', 1))) AS base_food_name
+    FROM v_food_nutrient_ranked
+),
+deduplicated_foods AS (
+    SELECT DISTINCT ON (nutrient_id, base_food_name)
+        nutrient_id,
+        nutrient_name,
+        nutrient_category,
+        food_id,
+        food_name,
+        group_name,
+        value,
+        unit
+    FROM ranked_foods
+    ORDER BY nutrient_id, base_food_name, value DESC NULLS LAST
+),
+final_ranked AS (
     SELECT
         nutrient_id,
         nutrient_name,
@@ -174,11 +200,21 @@ WITH ranked AS (
         unit,
         ROW_NUMBER() OVER (
             PARTITION BY nutrient_id
-            ORDER BY value DESC
+            ORDER BY value DESC NULLS LAST
         ) AS rank
-    FROM v_food_nutrient_ranked
+    FROM deduplicated_foods
 )
-SELECT * FROM ranked
+SELECT 
+    nutrient_id,
+    nutrient_name,
+    nutrient_category,
+    food_id,
+    food_name,
+    group_name,
+    value,
+    unit,
+    rank
+FROM final_ranked
 WHERE rank <= 20;
 
 CREATE INDEX idx_vtfpn_nutrient ON v_top_foods_per_nutrient(nutrient_id);
