@@ -5,16 +5,16 @@
 --   2. "Target-first tradeoff ranking (target nutrient vs antagonists)"
 --   3. "Best foods to support a nutrient cluster"
 --   4. Nutrient interaction graph (for visualization)
---   5. Coverage dashboard
 -- =====================================================================
 
 BEGIN;
 
-DROP MATERIALIZED VIEW IF EXISTS v_food_drv_coverage;
 DROP MATERIALIZED VIEW IF EXISTS v_top_foods_per_nutrient;
 DROP MATERIALIZED VIEW IF EXISTS v_interaction_graph;
 DROP MATERIALIZED VIEW IF EXISTS v_drv_lookup;
 DROP MATERIALIZED VIEW IF EXISTS v_food_nutrient_ranked;
+DROP MATERIALIZED VIEW IF EXISTS v_food_drv_coverage;
+
 
 -- =====================================================================
 -- VIEW 1: v_food_nutrient_ranked
@@ -219,104 +219,6 @@ WHERE rank <= 20;
 
 CREATE INDEX idx_vtfpn_nutrient ON v_top_foods_per_nutrient(nutrient_id);
 CREATE INDEX idx_vtfpn_name     ON v_top_foods_per_nutrient(nutrient_name);
-
-
--- =====================================================================
--- VIEW 5: v_food_drv_coverage
--- For each food, shows what % of a baseline adult DRV it provides
--- per 100g. Adult DRVs are ranked so nutrients like Calcium that use
--- age bands such as "18-24 years" or ">= 25 years" still resolve.
--- Powers "nutritional density" rankings and radar charts.
--- =====================================================================
-CREATE MATERIALIZED VIEW v_food_drv_coverage AS
-WITH adult_drv_ranked AS (
-    SELECT
-        drv.*,
-        ROW_NUMBER() OVER (
-            -- One adult baseline per nutrient + sex + reference type.
-            PARTITION BY drv.nutrient_name, drv.sex, drv.ref_type
-            ORDER BY
-                CASE
-                    WHEN drv.age_label = '≥ 18 years' THEN 0
-                    WHEN drv.age_min = 18 AND drv.age_max IS NOT NULL THEN 1
-                    WHEN drv.age_min = 18 THEN 2
-                    WHEN drv.age_min IS NOT NULL THEN 3
-                    ELSE 4
-                END,
-                CASE
-                    WHEN drv.population_label = 'Adults' THEN 0
-                    WHEN POSITION('(' IN drv.population_label) = 0 THEN 1
-                    WHEN drv.population_label ILIKE '%LPI 600 mg/day%' THEN 2
-                    WHEN drv.population_label ILIKE '%LPI 900 mg/day%' THEN 3
-                    WHEN drv.population_label ILIKE '%LPI 300 mg/day%' THEN 4
-                    WHEN drv.population_label ILIKE '%LPI 1200 mg/day%' THEN 5
-                    ELSE 6
-                END,
-                drv.age_min NULLS LAST,
-                drv.age_max NULLS LAST,
-                drv.age_label,
-                drv.value_numeric NULLS LAST,
-                drv.population_label
-        ) AS baseline_rank
-    FROM v_drv_lookup drv
-    WHERE drv.status = 'value'
-      AND drv.ref_type IN ('PRI', 'AI')
-      AND drv.life_stage = 'adult'
-),
-adult_drv_baseline AS (
-    SELECT
-        nutrient_name,
-        nutrient_category,
-        population_label,
-        sex,
-        life_stage,
-        age_min,
-        age_max,
-        age_unit,
-        age_label,
-        ref_type,
-        ref_type_label,
-        value_numeric,
-        value_min,
-        value_max,
-        unit,
-        status,
-        pal
-    FROM adult_drv_ranked
-    WHERE baseline_rank = 1
-)
-SELECT
-    vfnr.food_id,
-    vfnr.food_name,
-    vfnr.group_name,
-    vfnr.nutrient_name,
-    vfnr.nutrient_category,
-    vfnr.value              AS food_value_per_100g,
-    vfnr.unit               AS food_unit,
-    drv.population_label,
-    drv.ref_type,
-    drv.sex                 AS drv_sex,
-    drv.value_numeric       AS drv_value,
-    drv.unit                AS drv_unit,
-    drv.age_label,
-    -- % of DRV covered by 100g of this food
-    CASE
-        WHEN drv.value_numeric IS NOT NULL AND drv.value_numeric > 0
-        THEN ROUND(100.0 * vfnr.value / drv.value_numeric, 1)
-        ELSE NULL
-    END                     AS pct_drv_per_100g,
-    -- Capped display-friendly variant for charts where >100% is not useful.
-    CASE
-        WHEN drv.value_numeric IS NOT NULL AND drv.value_numeric > 0
-        THEN LEAST(ROUND(100.0 * vfnr.value / drv.value_numeric, 1), 100.0)
-        ELSE NULL
-    END                     AS pct_drv_per_100g_capped
-FROM v_food_nutrient_ranked vfnr
-JOIN adult_drv_baseline drv ON drv.nutrient_name = vfnr.nutrient_name;
-
-CREATE INDEX idx_vfdc_food     ON v_food_drv_coverage(food_id);
-CREATE INDEX idx_vfdc_nutrient ON v_food_drv_coverage(nutrient_name);
-CREATE INDEX idx_vfdc_pct      ON v_food_drv_coverage(pct_drv_per_100g DESC NULLS LAST);
 
 
 COMMIT;

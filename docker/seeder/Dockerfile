@@ -10,8 +10,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy entrypoint (db, scripts, data are volume-mounted at runtime)
-COPY docker/seeder/entrypoint.sh /entrypoint.sh
+# Copy the unified setup script to use as entrypoint
+COPY setup_db.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
+CMD ["--seeder"]
