@@ -33,6 +33,7 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO web_anon;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
     GRANT SELECT ON TABLES TO web_anon;
 
+-- Used
 CREATE OR REPLACE FUNCTION api.viz1_graph_edges()
 RETURNS TABLE (
     source_nutrient text,
@@ -54,6 +55,8 @@ AS $$
     ORDER BY ig.relationship_type, ig.source_nutrient, ig.target_nutrient;
 $$;
 
+
+--Used
 CREATE OR REPLACE FUNCTION api.viz1_degree_summary()
 RETURNS TABLE (
     nutrient_name text,
@@ -91,6 +94,7 @@ AS $$
     ORDER BY total_degree DESC, nutrient_name;
 $$;
 
+--Used
 CREATE OR REPLACE FUNCTION api.viz1_food_anchors(
     p_selected_nutrient text DEFAULT 'Iron',
     p_top_n integer DEFAULT 10
@@ -136,7 +140,8 @@ AS $$
     ORDER BY t.nutrient_name, tpn.rank, tpn.food_name;
 $$;
 
-CREATE OR REPLACE FUNCTION api.viz2_top_foods(
+--Unused
+/* CREATE OR REPLACE FUNCTION api.viz2_top_foods(
     p_nutrient text DEFAULT 'Iron',
     p_drv_sex text DEFAULT 'Female',
     p_ref_type text DEFAULT 'PRI',
@@ -196,9 +201,10 @@ AS $$
     FROM deduplicated_foods
     ORDER BY pct_drv_per_100g DESC NULLS LAST
     LIMIT GREATEST(p_limit, 1);
-$$;
+$$; */
 
-CREATE OR REPLACE FUNCTION api.viz2_food_panel(
+--Unused
+/* CREATE OR REPLACE FUNCTION api.viz2_food_panel(
     p_food_name text,
     p_nutrients text[] DEFAULT ARRAY['Iron', 'Calcium', 'Magnesium', 'Vitamin A', 'Vitamin C', 'Folate'],
     p_drv_sex text DEFAULT 'Female',
@@ -271,9 +277,10 @@ AS $$
         CASE WHEN drv_sex = p_drv_sex THEN 0 ELSE 1 END,
         drv_sex,
         ref_type;
-$$;
+$$; */
 
-CREATE OR REPLACE FUNCTION api.viz2_support_cluster(
+--Unused
+/* CREATE OR REPLACE FUNCTION api.viz2_support_cluster(
     p_source_nutrient text DEFAULT 'Vitamin D',
     p_relationship_type text DEFAULT 'synergistic',
     p_drv_sexes text[] DEFAULT ARRAY['Female', 'Both genders'],
@@ -332,9 +339,10 @@ AS $$
     FROM ranked r
     WHERE r.nutrient_rank <= GREATEST(p_per_nutrient_limit, 1)
     ORDER BY r.nutrient_name, r.nutrient_rank, r.food_name;
-$$;
+$$; */
 
-CREATE OR REPLACE FUNCTION api.viz2_conflict_aware(
+--Unused
+/* CREATE OR REPLACE FUNCTION api.viz2_conflict_aware(
     p_target_nutrient text DEFAULT 'Iron',
     p_drv_sex text DEFAULT 'Female',
     p_ref_type text DEFAULT 'PRI',
@@ -426,9 +434,10 @@ AS $$
         t.pct_drv_per_100g DESC NULLS LAST,
         t.food_name
     LIMIT GREATEST(p_limit, 1);
-$$;
+$$; */
 
-CREATE OR REPLACE FUNCTION api.viz2_curated_rank(
+--Unused
+/* CREATE OR REPLACE FUNCTION api.viz2_curated_rank(
     p_nutrient text DEFAULT 'Iron',
     p_drv_sex text DEFAULT 'Female',
     p_ref_type text DEFAULT 'PRI',
@@ -486,8 +495,9 @@ AS $$
         ) DESC NULLS LAST,
         v.food_name
     LIMIT GREATEST(p_limit, 1);
-$$;
+$$; */
 
+-- Used
 CREATE OR REPLACE FUNCTION api.viz1_option_nutrients()
 RETURNS TABLE (
     nutrient_name text,
@@ -514,7 +524,8 @@ AS $$
     ORDER BY n.canonical_name;
 $$;
 
-CREATE OR REPLACE FUNCTION api.viz2_option_nutrients(
+--Unused
+/* CREATE OR REPLACE FUNCTION api.viz2_option_nutrients(
     p_drv_sex text DEFAULT NULL,
     p_ref_type text DEFAULT NULL,
     p_curated_only boolean DEFAULT FALSE
@@ -535,9 +546,9 @@ AS $$
       AND (p_ref_type IS NULL OR v.ref_type = p_ref_type)
       AND (NOT p_curated_only OR COALESCE(fdp.include_in_rankings, FALSE) = TRUE)
     ORDER BY v.nutrient_name;
-$$;
-
-CREATE OR REPLACE FUNCTION api.viz2_option_foods(
+$$; */
+--Unused
+/* CREATE OR REPLACE FUNCTION api.viz2_option_foods(
     p_nutrient text DEFAULT NULL,
     p_drv_sex text DEFAULT NULL,
     p_ref_type text DEFAULT NULL,
@@ -563,9 +574,10 @@ AS $$
       AND (NOT p_curated_only OR COALESCE(fdp.include_in_rankings, FALSE) = TRUE)
     GROUP BY v.food_name
     ORDER BY v.food_name;
-$$;
+$$; */
 
-CREATE OR REPLACE FUNCTION api.viz2_option_drv_sexes(
+--Unused
+/* CREATE OR REPLACE FUNCTION api.viz2_option_drv_sexes(
     p_nutrient text DEFAULT NULL,
     p_ref_type text DEFAULT NULL,
     p_curated_only boolean DEFAULT FALSE
@@ -596,9 +608,10 @@ AS $$
             ELSE 3
         END,
         values_pool.drv_sex;
-$$;
+$$; */
 
-CREATE OR REPLACE FUNCTION api.viz2_option_ref_types(
+--Unused
+/* CREATE OR REPLACE FUNCTION api.viz2_option_ref_types(
     p_nutrient text DEFAULT NULL,
     p_drv_sex text DEFAULT NULL,
     p_curated_only boolean DEFAULT FALSE
@@ -628,9 +641,10 @@ AS $$
             ELSE 2
         END,
         values_pool.ref_type;
-$$;
+$$; */
 
-CREATE OR REPLACE FUNCTION api.viz2_option_relationship_types()
+--Unused
+/* CREATE OR REPLACE FUNCTION api.viz2_option_relationship_types()
 RETURNS TABLE (
     relationship_type text
 )
@@ -653,9 +667,10 @@ AS $$
             ELSE 3
         END,
         values_pool.relationship_type;
-$$;
+$$; */
 
-CREATE OR REPLACE FUNCTION api.viz2_option_source_nutrients(
+--Unused
+/* CREATE OR REPLACE FUNCTION api.viz2_option_source_nutrients(
     p_relationship_type text DEFAULT NULL
 )
 RETURNS TABLE (
@@ -672,9 +687,10 @@ AS $$
     WHERE (p_relationship_type IS NULL OR ig.relationship_type = p_relationship_type)
     GROUP BY ig.source_nutrient
     ORDER BY ig.source_nutrient;
-$$;
+$$; */
 
-CREATE OR REPLACE FUNCTION api.viz2_option_target_nutrients(
+--Unused
+/* CREATE OR REPLACE FUNCTION api.viz2_option_target_nutrients(
     p_requires_antagonists boolean DEFAULT TRUE
 )
 RETURNS TABLE (
@@ -713,8 +729,9 @@ AS $$
         )
     )
     ORDER BY n.nutrient_name;
-$$;
+$$; */
 
+--Used
 CREATE OR REPLACE FUNCTION api.calculate_meal_nutrition(
     p_age_years numeric,
     p_sex text,
@@ -873,6 +890,7 @@ AS $$
         nutrient_category, nutrient_name;
 $$;
 
+--Used
 CREATE OR REPLACE VIEW api.food_options AS
 SELECT 
     id AS food_id,
@@ -903,6 +921,7 @@ BEGIN;
 -- Main endpoint for the Choropleth map and Paradox Panel. 
 -- Joins the latest deficiency data with poverty data and UN track statuses
 -- ---------------------------------------------------------------------------
+-- Used
 CREATE OR REPLACE FUNCTION api.viz3_country_profiles(
     p_indicator text DEFAULT 'anaemia'
 )
@@ -1008,6 +1027,7 @@ GRANT EXECUTE ON FUNCTION api.viz3_country_profiles(text) TO web_anon;
 -- api.viz3_region_comparison
 -- Endpoint for Rich vs Poor region comparison
 -- ---------------------------------------------------------------------------
+--Used
 CREATE OR REPLACE FUNCTION api.viz3_region_comparison(
     p_indicator text DEFAULT 'stunting'
 )
@@ -1059,6 +1079,7 @@ GRANT EXECUTE ON FUNCTION api.viz3_region_comparison(text) TO web_anon;
 -- api.viz3_all_country_deficiencies
 -- Endpoint to fetch all country deficiency indicator data over time
 -- ---------------------------------------------------------------------------
+--Used
 CREATE OR REPLACE FUNCTION api.viz3_all_country_deficiencies(
     p_indicator text DEFAULT NULL
 )
