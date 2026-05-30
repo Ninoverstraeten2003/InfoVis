@@ -182,6 +182,7 @@ RETURNS TABLE (
     nutrient_category text,
     consumed_value numeric,
     target_value numeric,
+    max_value numeric,
     unit text,
     percentage_met numeric
 )
@@ -215,15 +216,14 @@ AS $$
     ),
     consumed_nutrients AS (
         SELECT 
-            n.id AS nutrient_id,
-            n.canonical_name,
-            n.category,
+            fnv.nutrient_id,
+            fnv.nutrient_name AS canonical_name,
+            fnv.nutrient_category AS category,
             SUM(fnv.value * (pf.amount_g / 100.0)) AS total_consumed,
-            MAX(n.default_unit) AS unit
+            MAX(fnv.unit) AS unit
         FROM parsed_foods pf
-        JOIN public.food_nutrient_value fnv ON pf.food_id = fnv.food_id
-        JOIN public.nutrient n ON fnv.nutrient_id = n.id
-        GROUP BY n.id, n.canonical_name, n.category
+        JOIN public.v_food_nutrient_ranked fnv ON pf.food_id = fnv.food_id
+        GROUP BY fnv.nutrient_id, fnv.nutrient_name, fnv.nutrient_category
     ),
     best_reference AS (
         SELECT 
@@ -266,6 +266,49 @@ AS $$
         FROM public.v_drv_lookup drv
         CROSS JOIN input_context ic
         WHERE drv.status = 'value'
+          AND drv.ref_type IN ('PRI', 'AI', 'AR')
+          AND drv.value_numeric IS NOT NULL
+          AND (drv.sex = ic.normalized_sex OR drv.sex = 'Both genders' OR drv.sex IS NULL)
+          AND (drv.life_stage = ic.effective_life_stage OR drv.life_stage IS NULL)
+          AND (drv.age_unit = 'years' AND p_age_years >= COALESCE(drv.age_min, 0) AND p_age_years <= COALESCE(drv.age_max, 150))
+          AND (
+              ic.effective_population_label IS NULL
+              OR drv.population_label = ic.effective_population_label
+          )
+    ),
+    ul_reference AS (
+        SELECT 
+            drv.nutrient_name,
+            drv.value_numeric,
+            drv.unit,
+            ROW_NUMBER() OVER (
+                PARTITION BY drv.nutrient_name
+                ORDER BY 
+                    -- 1. Prefer exact cohort label when explicitly requested.
+                    CASE
+                        WHEN ic.effective_population_label IS NOT NULL
+                             AND drv.population_label = ic.effective_population_label THEN 0
+                        WHEN ic.effective_population_label IS NOT NULL THEN 1
+                        WHEN drv.population_label = 'Adults' THEN 0
+                        WHEN drv.population_label = 'Children' THEN 0
+                        WHEN drv.population_label = 'Infants' THEN 0
+                        WHEN POSITION('(' IN drv.population_label) = 0 THEN 1
+                        WHEN drv.population_label ILIKE '%LPI 600 mg/day%' THEN 2
+                        WHEN drv.population_label ILIKE '%LPI 900 mg/day%' THEN 3
+                        WHEN drv.population_label ILIKE '%LPI 300 mg/day%' THEN 4
+                        WHEN drv.population_label ILIKE '%LPI 1200 mg/day%' THEN 5
+                        ELSE 6
+                    END,
+                    -- 2. Prefer exact sex match
+                    CASE WHEN drv.sex = ic.normalized_sex THEN 1 ELSE 2 END,
+                    -- 3. Prefer narrowest age band
+                    (COALESCE(drv.age_max, 150) - COALESCE(drv.age_min, 0)) ASC,
+                    drv.population_label
+            ) as rnk
+        FROM public.v_drv_lookup drv
+        CROSS JOIN input_context ic
+        WHERE drv.status = 'value'
+          AND drv.ref_type = 'UL'
           AND drv.value_numeric IS NOT NULL
           AND (drv.sex = ic.normalized_sex OR drv.sex = 'Both genders' OR drv.sex IS NULL)
           AND (drv.life_stage = ic.effective_life_stage OR drv.life_stage IS NULL)
@@ -294,10 +337,26 @@ AS $$
                 WHEN cn.unit = 'g' AND ir.unit = 'E%' AND cn.category = 'macro' THEN (ir.value_numeric / 100.0) * (et.mj * 1000.0) / 17.0
                 ELSE ir.value_numeric
             END AS target_value,
+            CASE
+                WHEN cn.unit = 'kJ' AND ul.unit = 'MJ/day' THEN ul.value_numeric * 1000
+                WHEN cn.unit = 'mg' AND ul.unit = 'g/day'  THEN ul.value_numeric * 1000
+                WHEN cn.unit = 'g' AND ul.unit = 'mg/day'  THEN ul.value_numeric / 1000
+                WHEN cn.unit = 'g' AND ul.unit = 'L/day' THEN ul.value_numeric * 1000
+                WHEN cn.unit = 'g' AND ul.unit LIKE 'mg/day%' THEN ul.value_numeric / 1000
+                WHEN cn.unit IN ('µg', 'μg', 'µg DFE', 'μg DFE', 'µg RE', 'μg RE') AND ul.unit = 'mg/day' THEN ul.value_numeric * 1000
+                WHEN cn.unit = 'g' AND ul.unit = 'g/kg bw per day' THEN ul.value_numeric * p_body_weight_kg
+                WHEN cn.unit = 'mg' AND ul.unit = 'mg/MJ' THEN ul.value_numeric * et.mj
+                WHEN cn.unit LIKE 'mg%' AND ul.unit = 'mg NE/MJ' THEN ul.value_numeric * et.mj
+                WHEN cn.unit = 'g' AND ul.unit = 'E%' AND cn.category = 'lipid' THEN (ul.value_numeric / 100.0) * (et.mj * 1000.0) / 37.0
+                WHEN cn.unit = 'g' AND ul.unit = 'E%' AND cn.category = 'macro' THEN (ul.value_numeric / 100.0) * (et.mj * 1000.0) / 17.0
+                ELSE ul.value_numeric
+            END AS max_value,
             cn.unit AS unit
         FROM consumed_nutrients cn
         LEFT JOIN best_reference ir 
             ON cn.canonical_name = ir.nutrient_name AND ir.rnk = 1
+        LEFT JOIN ul_reference ul 
+            ON cn.canonical_name = ul.nutrient_name AND ul.rnk = 1
         CROSS JOIN (
             SELECT COALESCE((SELECT value_numeric FROM best_reference WHERE nutrient_name = 'Energy' AND rnk = 1 LIMIT 1), 0) AS mj
         ) et
@@ -313,6 +372,10 @@ AS $$
             WHEN nutrient_name = 'Energy' THEN ROUND(target_value / 4.184, 0)
             ELSE ROUND(target_value, 2)
         END AS target_value,
+        CASE 
+            WHEN nutrient_name = 'Energy' THEN ROUND(max_value / 4.184, 0)
+            ELSE ROUND(max_value, 2)
+        END AS max_value,
         CASE 
             WHEN nutrient_name = 'Energy' THEN 'kcal'
             ELSE unit
@@ -543,6 +606,45 @@ AS $$
 $$;
 
 GRANT EXECUTE ON FUNCTION api.viz3_all_country_deficiencies(text) TO web_anon;
+
+-- ---------------------------------------------------------------------------
+-- api.get_ga_data
+-- Endpoint to fetch food catalog and nutrient matrix for the GA meal builder
+-- ---------------------------------------------------------------------------
+--Used
+CREATE OR REPLACE FUNCTION api.get_ga_data()
+RETURNS json AS $$
+DECLARE
+    v_catalog json;
+    v_matrix json;
+BEGIN
+    SELECT json_agg(json_build_object(
+        'id', f.id,
+        'name', f.name,
+        'ranking_category', fdp.ranking_category,
+        'serving_size_g', fdp.serving_size_g,
+        'serving_label', fdp.serving_label
+    )) INTO v_catalog
+    FROM public.food f
+    JOIN public.food_display_profile fdp ON f.id = fdp.food_id
+    WHERE fdp.include_in_rankings = true
+      AND fdp.ranking_category IS NOT NULL
+      AND fdp.serving_size_g > 0;
+
+    SELECT json_object_agg(sub.food_id, sub.nutrients) INTO v_matrix
+    FROM (
+        SELECT v.food_id, json_object_agg(v.nutrient_name, COALESCE(v.value, 0.0)) as nutrients
+        FROM public.v_food_nutrient_ranked v
+        JOIN public.food_display_profile fdp ON fdp.food_id = v.food_id
+        WHERE fdp.include_in_rankings = true
+        GROUP BY v.food_id
+    ) sub;
+
+    RETURN json_build_object('catalog', v_catalog, 'matrix', v_matrix);
+END;
+$$ LANGUAGE plpgsql STABLE;
+
+GRANT EXECUTE ON FUNCTION api.get_ga_data() TO web_anon;
 
 COMMIT;
 
