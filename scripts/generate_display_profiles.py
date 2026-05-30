@@ -50,8 +50,15 @@ def ask_openrouter(batch):
     - "food_id": The exact ID provided.
     - "serving_size_g": A realistic integer portion size in grams for a normal meal.
     - "serving_label": A human-friendly label (e.g., "1 clove", "1 fillet", "1 medium piece", "1 tbsp", "1 cup").
-    - "ranking_category": Strictly ONE of ["main", "side", "carb_base", "spice_or_garnish", "beverage", "snack", "fat_or_oil", "ingredient"]. CRITICAL: Raw flour, dough, sugar, and baking staples MUST be "ingredient", NOT "carb_base".
-    - "include_in_rankings": Boolean. MUST be false for "ingredient" items (like raw flour), weird obscure meats, or things not eaten as standalone foods. True only for normal edible foods.
+    - "ranking_category": Must be one of:
+                  - "main" (A central component of a meal, e.g., a chicken breast, a steak, a lentil stew)
+                  - "side" (A complementary dish, e.g., steamed carrots, a small salad, sauteed spinach)
+                  - "carb_base" (A staple carbohydrate source, e.g., rice, pasta, bread, potatoes)
+                  - "beverage" (A drink, e.g., apple juice, milk, coffee)
+                  - "ingredient" (Raw components rarely eaten alone, e.g., raw flour, baking soda, spices)
+                  - "other" (Snacks, condiments, desserts)
+    - "target_age_group": Strictly one of ["infant", "child", "adult", "all"].
+    - "include_in_rankings": MUST be false for "ingredient" items (like raw flour), weird obscure meats, or things not eaten as standalone foods. MUST be false for "infant" foods unless specifically designing baby food. True for standard, realistic meal components.
     - "display_priority": Integer from 1 to 100 (1 is ultra-common staple like Rice/Chicken, 50 is standard, 100 is rare).
 
     Foods:
@@ -114,8 +121,8 @@ def main():
                     try:
                         cur.execute("""
                             INSERT INTO food_display_profile 
-                            (food_id, serving_size_g, serving_label, include_in_rankings, ranking_category, display_priority)
-                            VALUES (%s, %s, %s, %s, %s, %s)
+                            (food_id, serving_size_g, serving_label, include_in_rankings, ranking_category, display_priority, target_age_group)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s)
                             ON CONFLICT (food_id) DO NOTHING
                         """, (
                             res.get("food_id"),
@@ -123,7 +130,8 @@ def main():
                             res.get("serving_label"),
                             res.get("include_in_rankings", True),
                             res.get("ranking_category"),
-                            res.get("display_priority", 50)
+                            res.get("display_priority", 50),
+                            res.get("target_age_group", "all")
                         ))
                     except Exception as e:
                         print(f"DB Insert Error for ID {res.get('food_id')}: {e}")

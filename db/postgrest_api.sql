@@ -622,6 +622,7 @@ BEGIN
         'id', f.id,
         'name', f.name,
         'ranking_category', fdp.ranking_category,
+        'target_age_group', fdp.target_age_group,
         'serving_size_g', fdp.serving_size_g,
         'serving_label', fdp.serving_label
     )) INTO v_catalog

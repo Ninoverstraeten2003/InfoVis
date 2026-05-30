@@ -7,8 +7,12 @@ CREATE TABLE IF NOT EXISTS food_display_profile (
     include_in_rankings  BOOLEAN NOT NULL DEFAULT TRUE,
     ranking_category     TEXT,
     display_priority     INT NOT NULL DEFAULT 100,
+    target_age_group     TEXT NOT NULL DEFAULT 'all',
     notes                TEXT
 );
+
+-- Automatically upgrade existing tables
+ALTER TABLE food_display_profile ADD COLUMN IF NOT EXISTS target_age_group TEXT NOT NULL DEFAULT 'all';
 
 CREATE INDEX IF NOT EXISTS idx_fdp_include
     ON food_display_profile(include_in_rankings);
