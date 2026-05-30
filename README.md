@@ -26,6 +26,7 @@ docker compose run --rm seeder ./setup_db.sh --transform --load seed_canonical -
 
 Automatically categorize raw CIQUAL foods into culinary categories (e.g., `main`, `side`, `carb_base`, `beverage`) using the LLM. 
 *(Make sure to run `pip install -r requirements.txt` first if running locally!)*
+*(Make sure `OPENROUTER_API_KEY` is set in your `.env` file if running via Docker!)*
 
 ```bash
 # Local

@@ -69,6 +69,7 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@postgres:5432/nutriverse
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
     profiles:
       - seed
     volumes:
