@@ -24,14 +24,15 @@ docker compose run --rm seeder ./setup_db.sh --transform --load seed_canonical -
 
 ## Generate Culinary Profiles
 
-Automatically categorize raw CIQUAL foods into culinary categories (e.g., `main`, `side`, `carb_base`, `beverage`) using the LLM:
+Automatically categorize raw CIQUAL foods into culinary categories (e.g., `main`, `side`, `carb_base`, `beverage`) using the LLM. 
+*(Make sure to run `pip install -r requirements.txt` first if running locally!)*
 
 ```bash
 # Local
 python scripts/generate_display_profiles.py
 
 # Docker
-docker compose run --rm seeder python scripts/generate_display_profiles.py
+docker compose run --rm --entrypoint="" seeder python scripts/generate_display_profiles.py
 ```
 
 ## Run the Genetic Algorithm
@@ -43,5 +44,5 @@ Test the in-memory GA engine to instantly generate a balanced, personalized 2500
 python scripts/meal_generator_ga.py
 
 # Docker
-docker compose run --rm seeder python scripts/meal_generator_ga.py
+docker compose run --rm --entrypoint="" seeder python scripts/meal_generator_ga.py
 ```
