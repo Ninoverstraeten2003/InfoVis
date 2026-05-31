@@ -9,7 +9,7 @@ DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:postgres@lo
 
 # Define the structure of our Daily Meal Plan
 MEAL_TEMPLATE = [
-    {"meal": "Breakfast", "category": "carb_base"},
+    {"meal": "Breakfast", "category": "breakfast_carb"},
     {"meal": "Breakfast", "category": "beverage"},
     {"meal": "Lunch", "category": "main"},
     {"meal": "Lunch", "category": "side"},
