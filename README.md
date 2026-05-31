@@ -16,10 +16,10 @@ Initialize the database. To refresh canonical data **without** dropping the `foo
 
 ```bash
 # Local
-./setup_db.sh --transform --load seed_canonical --load load_efsa_drvs --load load_ciqual --refresh
+./setup_db.sh --transform --load-all --refresh
 
 # Docker
-docker compose run --rm seeder --transform --load seed_canonical --load load_efsa_drvs --load load_ciqual --refresh
+docker compose run --rm seeder --seeder
 ```
 
 ## Generate Culinary Profiles
