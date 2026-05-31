@@ -650,3 +650,164 @@ GRANT EXECUTE ON FUNCTION api.get_ga_data() TO web_anon;
 COMMIT;
 
 NOTIFY pgrst, 'reload schema';
+-- New lightweight function to fetch targets without processing a food array
+CREATE OR REPLACE FUNCTION api.get_user_targets(
+    p_age_years numeric,
+    p_sex text,
+    p_life_stage text DEFAULT NULL,
+    p_pal numeric DEFAULT 1.6,
+    p_body_weight_kg numeric DEFAULT 70.0,
+    p_population_label text DEFAULT NULL
+)
+RETURNS TABLE (
+    nutrient_name text,
+    nutrient_category text,
+    target_value numeric,
+    max_value numeric,
+    unit text
+)
+LANGUAGE sql
+STABLE
+AS $$
+    WITH input_context AS (
+        SELECT
+            CASE
+                WHEN p_sex IS NULL THEN NULL
+                WHEN lower(trim(p_sex)) = 'male' THEN 'Male'
+                WHEN lower(trim(p_sex)) = 'female' THEN 'Female'
+                WHEN lower(trim(p_sex)) IN ('both genders', 'both', 'all') THEN 'Both genders'
+                ELSE p_sex
+            END AS normalized_sex,
+            COALESCE(
+                NULLIF(trim(p_life_stage), ''),
+                CASE
+                    WHEN p_age_years < 1 THEN 'infant'
+                    WHEN p_age_years < 18 THEN 'child'
+                    ELSE 'adult'
+                END
+            ) AS effective_life_stage,
+            NULLIF(trim(p_population_label), '') AS effective_population_label
+    ),
+    best_reference AS (
+        SELECT 
+            drv.nutrient_name,
+            drv.value_numeric,
+            drv.unit,
+            ROW_NUMBER() OVER (
+                PARTITION BY drv.nutrient_name
+                ORDER BY 
+                    CASE drv.ref_type WHEN 'PRI' THEN 1 WHEN 'AI' THEN 2 WHEN 'AR' THEN 3 ELSE 4 END,
+                    CASE
+                        WHEN ic.effective_population_label IS NOT NULL AND drv.population_label = ic.effective_population_label THEN 0
+                        WHEN ic.effective_population_label IS NOT NULL THEN 1
+                        WHEN drv.population_label = 'Adults' THEN 0
+                        WHEN drv.population_label = 'Children' THEN 0
+                        WHEN drv.population_label = 'Infants' THEN 0
+                        WHEN POSITION('(' IN drv.population_label) = 0 THEN 1
+                        WHEN drv.population_label ILIKE '%LPI 600 mg/day%' THEN 2
+                        WHEN drv.population_label ILIKE '%LPI 900 mg/day%' THEN 3
+                        WHEN drv.population_label ILIKE '%LPI 300 mg/day%' THEN 4
+                        WHEN drv.population_label ILIKE '%LPI 1200 mg/day%' THEN 5
+                        ELSE 6
+                    END,
+                    CASE WHEN drv.sex = ic.normalized_sex THEN 1 ELSE 2 END,
+                    ABS(COALESCE(drv.pal, p_pal) - p_pal),
+                    (COALESCE(drv.age_max, 150) - COALESCE(drv.age_min, 0)) ASC,
+                    drv.population_label
+            ) as rnk
+        FROM public.v_drv_lookup drv
+        CROSS JOIN input_context ic
+        WHERE drv.status = 'value'
+          AND drv.ref_type IN ('PRI', 'AI', 'AR')
+          AND drv.value_numeric IS NOT NULL
+          AND (drv.sex = ic.normalized_sex OR drv.sex = 'Both genders' OR drv.sex IS NULL)
+          AND (drv.life_stage = ic.effective_life_stage OR drv.life_stage IS NULL)
+          AND (drv.age_unit = 'years' AND p_age_years >= COALESCE(drv.age_min, 0) AND p_age_years <= COALESCE(drv.age_max, 150))
+          AND (ic.effective_population_label IS NULL OR drv.population_label = ic.effective_population_label)
+    ),
+    ul_reference AS (
+        SELECT 
+            drv.nutrient_name,
+            drv.value_numeric,
+            drv.unit,
+            ROW_NUMBER() OVER (
+                PARTITION BY drv.nutrient_name
+                ORDER BY 
+                    CASE
+                        WHEN ic.effective_population_label IS NOT NULL AND drv.population_label = ic.effective_population_label THEN 0
+                        WHEN ic.effective_population_label IS NOT NULL THEN 1
+                        WHEN drv.population_label = 'Adults' THEN 0
+                        WHEN drv.population_label = 'Children' THEN 0
+                        WHEN drv.population_label = 'Infants' THEN 0
+                        WHEN POSITION('(' IN drv.population_label) = 0 THEN 1
+                        WHEN drv.population_label ILIKE '%LPI 600 mg/day%' THEN 2
+                        WHEN drv.population_label ILIKE '%LPI 900 mg/day%' THEN 3
+                        WHEN drv.population_label ILIKE '%LPI 300 mg/day%' THEN 4
+                        WHEN drv.population_label ILIKE '%LPI 1200 mg/day%' THEN 5
+                        ELSE 6
+                    END,
+                    CASE WHEN drv.sex = ic.normalized_sex THEN 1 ELSE 2 END,
+                    (COALESCE(drv.age_max, 150) - COALESCE(drv.age_min, 0)) ASC,
+                    drv.population_label
+            ) as rnk
+        FROM public.v_drv_lookup drv
+        CROSS JOIN input_context ic
+        WHERE drv.status = 'value'
+          AND drv.ref_type = 'UL'
+          AND drv.value_numeric IS NOT NULL
+          AND (drv.sex = ic.normalized_sex OR drv.sex = 'Both genders' OR drv.sex IS NULL)
+          AND (drv.life_stage = ic.effective_life_stage OR drv.life_stage IS NULL)
+          AND (drv.age_unit = 'years' AND p_age_years >= COALESCE(drv.age_min, 0) AND p_age_years <= COALESCE(drv.age_max, 150))
+          AND (ic.effective_population_label IS NULL OR drv.population_label = ic.effective_population_label)
+    ),
+    raw_results AS (
+        SELECT 
+            n.canonical_name AS nutrient_name,
+            n.category AS nutrient_category,
+            CASE
+                WHEN n.default_unit = 'kJ' AND ir.unit = 'MJ/day' THEN ir.value_numeric * 1000
+                WHEN n.default_unit = 'mg' AND ir.unit = 'g/day'  THEN ir.value_numeric * 1000
+                WHEN n.default_unit = 'g' AND ir.unit = 'mg/day'  THEN ir.value_numeric / 1000
+                WHEN n.default_unit = 'g' AND ir.unit = 'L/day' THEN ir.value_numeric * 1000
+                WHEN n.default_unit = 'g' AND ir.unit LIKE 'mg/day%' THEN ir.value_numeric / 1000
+                WHEN n.default_unit IN ('µg', 'μg', 'µg DFE', 'μg DFE', 'µg RE', 'μg RE') AND ir.unit = 'mg/day' THEN ir.value_numeric * 1000
+                WHEN n.default_unit = 'g' AND ir.unit = 'g/kg bw per day' THEN ir.value_numeric * p_body_weight_kg
+                WHEN n.default_unit = 'mg' AND ir.unit = 'mg/MJ' THEN ir.value_numeric * et.mj
+                WHEN n.default_unit LIKE 'mg%' AND ir.unit = 'mg NE/MJ' THEN ir.value_numeric * et.mj
+                WHEN n.default_unit = 'g' AND ir.unit = 'E%' AND n.category = 'lipid' THEN (ir.value_numeric / 100.0) * (et.mj * 1000.0) / 37.0
+                WHEN n.default_unit = 'g' AND ir.unit = 'E%' AND n.category = 'macro' THEN (ir.value_numeric / 100.0) * (et.mj * 1000.0) / 17.0
+                ELSE ir.value_numeric
+            END AS target_value,
+            CASE
+                WHEN n.default_unit = 'kJ' AND ul.unit = 'MJ/day' THEN ul.value_numeric * 1000
+                WHEN n.default_unit = 'mg' AND ul.unit = 'g/day'  THEN ul.value_numeric * 1000
+                WHEN n.default_unit = 'g' AND ul.unit = 'mg/day'  THEN ul.value_numeric / 1000
+                WHEN n.default_unit = 'g' AND ul.unit = 'L/day' THEN ul.value_numeric * 1000
+                WHEN n.default_unit = 'g' AND ul.unit LIKE 'mg/day%' THEN ul.value_numeric / 1000
+                WHEN n.default_unit IN ('µg', 'μg', 'µg DFE', 'μg DFE', 'µg RE', 'μg RE') AND ul.unit = 'mg/day' THEN ul.value_numeric * 1000
+                WHEN n.default_unit = 'g' AND ul.unit = 'g/kg bw per day' THEN ul.value_numeric * p_body_weight_kg
+                WHEN n.default_unit = 'mg' AND ul.unit = 'mg/MJ' THEN ul.value_numeric * et.mj
+                WHEN n.default_unit LIKE 'mg%' AND ul.unit = 'mg NE/MJ' THEN ul.value_numeric * et.mj
+                WHEN n.default_unit = 'g' AND ul.unit = 'E%' AND n.category = 'lipid' THEN (ul.value_numeric / 100.0) * (et.mj * 1000.0) / 37.0
+                WHEN n.default_unit = 'g' AND ul.unit = 'E%' AND n.category = 'macro' THEN (ul.value_numeric / 100.0) * (et.mj * 1000.0) / 17.0
+                ELSE ul.value_numeric
+            END AS max_value,
+            n.default_unit AS unit
+        FROM public.nutrient n
+        LEFT JOIN best_reference ir ON n.canonical_name = ir.nutrient_name AND ir.rnk = 1
+        LEFT JOIN ul_reference ul ON n.canonical_name = ul.nutrient_name AND ul.rnk = 1
+        CROSS JOIN (
+            SELECT COALESCE((SELECT value_numeric FROM best_reference WHERE nutrient_name = 'Energy' AND rnk = 1 LIMIT 1), 0) AS mj
+        ) et
+    )
+    SELECT 
+        nutrient_name,
+        nutrient_category,
+        CASE WHEN nutrient_name = 'Energy' THEN ROUND(target_value / 4.184, 0) ELSE ROUND(target_value, 2) END AS target_value,
+        CASE WHEN nutrient_name = 'Energy' THEN ROUND(max_value / 4.184, 0) ELSE ROUND(max_value, 2) END AS max_value,
+        CASE WHEN nutrient_name = 'Energy' THEN 'kcal' ELSE unit END AS unit
+    FROM raw_results
+    WHERE target_value IS NOT NULL OR max_value IS NOT NULL;
+$$;
+
+GRANT EXECUTE ON FUNCTION api.get_user_targets(numeric, text, text, numeric, numeric, text) TO web_anon;
