@@ -26,7 +26,7 @@ DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:postgres@lo
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
 # You can change this to gpt-4o-mini or anthropic/claude-3-haiku for speed/cost
-MODEL = "google/gemini-3.1-flash-lite"
+MODEL = "google/gemini-2.5-flash-lite"
 
 def get_foods_without_profile(conn):
     with conn.cursor() as cur:
