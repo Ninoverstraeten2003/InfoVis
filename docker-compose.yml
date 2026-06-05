@@ -32,8 +32,6 @@ services:
     image: postgrest/postgrest:v12.2.3
     container_name: nutriverse_postgrest
     restart: unless-stopped
-    ports:
-      - "3002:3000"
     networks:
       - traefik_proxy
       - nutriverse_internal
