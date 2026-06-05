@@ -5,6 +5,8 @@
 
 BEGIN;
 
+CREATE EXTENSION IF NOT EXISTS vector;
+
 -- ---------------------------------------------------------------------------
 -- 1. source_file — provenance: which file was ingested
 -- ---------------------------------------------------------------------------
@@ -134,6 +136,7 @@ CREATE TABLE food (
     subgroup_name       TEXT,                                 -- alim_ssgrp_nom_eng
     subsubgroup_code    TEXT,                                 -- alim_ssssgrp_code
     subsubgroup_name    TEXT,                                 -- alim_ssssgrp_nom_eng
+    search_embedding    vector(1536),                         -- Vector embedding for AI semantic search
     UNIQUE (source_food_code)
 );
 
@@ -149,6 +152,7 @@ CREATE TABLE food_display_profile (
     include_in_rankings  BOOLEAN NOT NULL DEFAULT TRUE,        -- curated display filter
     ranking_category     TEXT,                                 -- 'meal_food', 'ingredient', 'spice', 'powder', etc.
     display_priority     INT NOT NULL DEFAULT 100,             -- lower = show earlier
+    target_age_group     TEXT NOT NULL DEFAULT 'all',
     notes                TEXT
 );
 

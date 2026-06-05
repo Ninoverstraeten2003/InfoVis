@@ -36,6 +36,18 @@ python scripts/generate_display_profiles.py
 docker compose run --rm --entrypoint="" seeder python scripts/generate_display_profiles.py
 ```
 
+## Generate Vector Embeddings (For AI Barcode Matching)
+
+Generate mathematical vectors for every Ciqual food using `openai/text-embedding-3-small` and save them to `pgvector` inside the database. This allows lightning-fast semantic matching.
+
+```bash
+# Local
+python scripts/generate_embeddings.py
+
+# Docker
+docker compose run --rm --entrypoint="" seeder python scripts/generate_embeddings.py
+```
+
 ## Run the Genetic Algorithm
 
 Test the in-memory GA engine to instantly generate a balanced, personalized 2500+ kcal daily meal plan:

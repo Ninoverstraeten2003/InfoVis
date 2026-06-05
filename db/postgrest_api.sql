@@ -400,6 +400,32 @@ ORDER BY name;
 
 GRANT SELECT ON api.food_options TO web_anon;
 
+-- ---------------------------------------------------------------------------
+-- Vector Semantic Search RPC
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION api.match_foods(query_embedding vector(1536), match_limit int DEFAULT 5)
+RETURNS TABLE (
+    food_id INT,
+    food_name TEXT,
+    food_category TEXT,
+    similarity FLOAT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        f.id AS food_id,
+        f.name AS food_name,
+        f.group_name AS food_category,
+        1 - (f.search_embedding <=> query_embedding) AS similarity
+    FROM public.food f
+    WHERE f.search_embedding IS NOT NULL
+    ORDER BY f.search_embedding <=> query_embedding
+    LIMIT match_limit;
+END;
+$$ LANGUAGE plpgsql STABLE;
+
+GRANT EXECUTE ON FUNCTION api.match_foods(vector, int) TO web_anon;
+
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA api TO web_anon;
 ALTER DEFAULT PRIVILEGES IN SCHEMA api
     GRANT EXECUTE ON FUNCTIONS TO web_anon;
