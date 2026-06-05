@@ -320,43 +320,44 @@ AS $$
     ),
     raw_results AS (
         SELECT 
-            cn.canonical_name AS nutrient_name,
-            cn.category AS nutrient_category,
-            cn.total_consumed AS consumed_value,
+            n.canonical_name AS nutrient_name,
+            n.category AS nutrient_category,
+            COALESCE(cn.total_consumed, 0) AS consumed_value,
             CASE
-                WHEN cn.unit = 'kJ' AND ir.unit = 'MJ/day' THEN ir.value_numeric * 1000
-                WHEN cn.unit = 'mg' AND ir.unit = 'g/day'  THEN ir.value_numeric * 1000
-                WHEN cn.unit = 'g' AND ir.unit = 'mg/day'  THEN ir.value_numeric / 1000
-                WHEN cn.unit = 'g' AND ir.unit = 'L/day' THEN ir.value_numeric * 1000
-                WHEN cn.unit = 'g' AND ir.unit LIKE 'mg/day%' THEN ir.value_numeric / 1000
-                WHEN cn.unit IN ('µg', 'μg', 'µg DFE', 'μg DFE', 'µg RE', 'μg RE') AND ir.unit = 'mg/day' THEN ir.value_numeric * 1000
-                WHEN cn.unit = 'g' AND ir.unit = 'g/kg bw per day' THEN ir.value_numeric * p_body_weight_kg
-                WHEN cn.unit = 'mg' AND ir.unit = 'mg/MJ' THEN ir.value_numeric * et.mj
-                WHEN cn.unit LIKE 'mg%' AND ir.unit = 'mg NE/MJ' THEN ir.value_numeric * et.mj
-                WHEN cn.unit = 'g' AND ir.unit = 'E%' AND cn.category = 'lipid' THEN (ir.value_numeric / 100.0) * (et.mj * 1000.0) / 37.0
-                WHEN cn.unit = 'g' AND ir.unit = 'E%' AND cn.category = 'macro' THEN (ir.value_numeric / 100.0) * (et.mj * 1000.0) / 17.0
+                WHEN n.default_unit = 'kJ' AND ir.unit = 'MJ/day' THEN ir.value_numeric * 1000
+                WHEN n.default_unit = 'mg' AND ir.unit = 'g/day'  THEN ir.value_numeric * 1000
+                WHEN n.default_unit = 'g' AND ir.unit = 'mg/day'  THEN ir.value_numeric / 1000
+                WHEN n.default_unit = 'g' AND ir.unit = 'L/day' THEN ir.value_numeric * 1000
+                WHEN n.default_unit = 'g' AND ir.unit LIKE 'mg/day%' THEN ir.value_numeric / 1000
+                WHEN n.default_unit IN ('µg', 'μg', 'µg DFE', 'μg DFE', 'µg RE', 'μg RE') AND ir.unit = 'mg/day' THEN ir.value_numeric * 1000
+                WHEN n.default_unit = 'g' AND ir.unit = 'g/kg bw per day' THEN ir.value_numeric * p_body_weight_kg
+                WHEN n.default_unit = 'mg' AND ir.unit = 'mg/MJ' THEN ir.value_numeric * et.mj
+                WHEN n.default_unit LIKE 'mg%' AND ir.unit = 'mg NE/MJ' THEN ir.value_numeric * et.mj
+                WHEN n.default_unit = 'g' AND ir.unit = 'E%' AND n.category = 'lipid' THEN (ir.value_numeric / 100.0) * (et.mj * 1000.0) / 37.0
+                WHEN n.default_unit = 'g' AND ir.unit = 'E%' AND n.category = 'macro' THEN (ir.value_numeric / 100.0) * (et.mj * 1000.0) / 17.0
                 ELSE ir.value_numeric
             END AS target_value,
             CASE
-                WHEN cn.unit = 'kJ' AND ul.unit = 'MJ/day' THEN ul.value_numeric * 1000
-                WHEN cn.unit = 'mg' AND ul.unit = 'g/day'  THEN ul.value_numeric * 1000
-                WHEN cn.unit = 'g' AND ul.unit = 'mg/day'  THEN ul.value_numeric / 1000
-                WHEN cn.unit = 'g' AND ul.unit = 'L/day' THEN ul.value_numeric * 1000
-                WHEN cn.unit = 'g' AND ul.unit LIKE 'mg/day%' THEN ul.value_numeric / 1000
-                WHEN cn.unit IN ('µg', 'μg', 'µg DFE', 'μg DFE', 'µg RE', 'μg RE') AND ul.unit = 'mg/day' THEN ul.value_numeric * 1000
-                WHEN cn.unit = 'g' AND ul.unit = 'g/kg bw per day' THEN ul.value_numeric * p_body_weight_kg
-                WHEN cn.unit = 'mg' AND ul.unit = 'mg/MJ' THEN ul.value_numeric * et.mj
-                WHEN cn.unit LIKE 'mg%' AND ul.unit = 'mg NE/MJ' THEN ul.value_numeric * et.mj
-                WHEN cn.unit = 'g' AND ul.unit = 'E%' AND cn.category = 'lipid' THEN (ul.value_numeric / 100.0) * (et.mj * 1000.0) / 37.0
-                WHEN cn.unit = 'g' AND ul.unit = 'E%' AND cn.category = 'macro' THEN (ul.value_numeric / 100.0) * (et.mj * 1000.0) / 17.0
+                WHEN n.default_unit = 'kJ' AND ul.unit = 'MJ/day' THEN ul.value_numeric * 1000
+                WHEN n.default_unit = 'mg' AND ul.unit = 'g/day'  THEN ul.value_numeric * 1000
+                WHEN n.default_unit = 'g' AND ul.unit = 'mg/day'  THEN ul.value_numeric / 1000
+                WHEN n.default_unit = 'g' AND ul.unit = 'L/day' THEN ul.value_numeric * 1000
+                WHEN n.default_unit = 'g' AND ul.unit LIKE 'mg/day%' THEN ul.value_numeric / 1000
+                WHEN n.default_unit IN ('µg', 'μg', 'µg DFE', 'μg DFE', 'µg RE', 'μg RE') AND ul.unit = 'mg/day' THEN ul.value_numeric * 1000
+                WHEN n.default_unit = 'g' AND ul.unit = 'g/kg bw per day' THEN ul.value_numeric * p_body_weight_kg
+                WHEN n.default_unit = 'mg' AND ul.unit = 'mg/MJ' THEN ul.value_numeric * et.mj
+                WHEN n.default_unit LIKE 'mg%' AND ul.unit = 'mg NE/MJ' THEN ul.value_numeric * et.mj
+                WHEN n.default_unit = 'g' AND ul.unit = 'E%' AND n.category = 'lipid' THEN (ul.value_numeric / 100.0) * (et.mj * 1000.0) / 37.0
+                WHEN n.default_unit = 'g' AND ul.unit = 'E%' AND n.category = 'macro' THEN (ul.value_numeric / 100.0) * (et.mj * 1000.0) / 17.0
                 ELSE ul.value_numeric
             END AS max_value,
-            cn.unit AS unit
-        FROM consumed_nutrients cn
+            n.default_unit AS unit
+        FROM public.nutrient n
+        LEFT JOIN consumed_nutrients cn ON n.canonical_name = cn.canonical_name
         LEFT JOIN best_reference ir 
-            ON cn.canonical_name = ir.nutrient_name AND ir.rnk = 1
+            ON n.canonical_name = ir.nutrient_name AND ir.rnk = 1
         LEFT JOIN ul_reference ul 
-            ON cn.canonical_name = ul.nutrient_name AND ul.rnk = 1
+            ON n.canonical_name = ul.nutrient_name AND ul.rnk = 1
         CROSS JOIN (
             SELECT COALESCE((SELECT value_numeric FROM best_reference WHERE nutrient_name = 'Energy' AND rnk = 1 LIMIT 1), 0) AS mj
         ) et
@@ -385,6 +386,7 @@ AS $$
             ELSE NULL 
         END AS percentage_met
     FROM raw_results
+    WHERE target_value IS NOT NULL OR max_value IS NOT NULL OR consumed_value > 0
     ORDER BY 
         nutrient_category, nutrient_name;
 $$;
